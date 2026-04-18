@@ -2,18 +2,18 @@ import { Clock3 } from 'lucide-react'
 
 const Header = () => {
   return (
-    <header className="mb-4 rounded-xl border border-stone-300/90 border-t-[6px] border-t-amber-600 bg-[#faf8f3] p-5 shadow-md shadow-amber-950/10 ring-1 ring-amber-950/5">
+    <header className="mb-4 rounded-xl border border-stone-400/70 border-t-[8px] border-t-amber-600 bg-gradient-to-r from-[#faf4e8] via-[#f6eddf] to-[#efe2ce] p-5 shadow-md shadow-amber-950/15 ring-1 ring-black/5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
             Podo&apos;nun Kaybı
           </p>
-          <h2 className="font-serif text-3xl font-semibold text-slate-900">
+          <h2 className="font-serif text-3xl font-bold text-slate-900">
             Investigation Board
           </h2>
         </div>
-        <span className="inline-flex items-center gap-2 self-start rounded-full border border-stone-300 bg-stone-100 px-3 py-1 font-mono text-[11px] font-medium tracking-wide text-slate-700 sm:self-auto">
-          <Clock3 size={14} aria-hidden className="text-amber-600" />
+        <span className="inline-flex items-center gap-2 self-start rounded-md border border-red-300 bg-red-50 px-3 py-1 font-mono text-[11px] font-semibold tracking-[0.14em] text-red-700 shadow-sm sm:self-auto">
+          <Clock3 size={14} aria-hidden className="text-red-600" />
           CASE #2026-04-18
         </span>
       </div>

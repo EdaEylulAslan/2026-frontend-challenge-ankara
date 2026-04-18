@@ -6,22 +6,25 @@
 }
 
 body {
-  /* Warmer “case file” tone — visibly distinct from flat slate-50 */
-  background-color: #ebe4d7;
+  /* Stronger “investigation wall” paper tone */
+  background-color: #e6dece;
   background-image:
-    radial-gradient(circle at 1px 1px, rgba(15, 23, 42, 0.06) 1px, transparent 0);
-  background-size: 18px 18px;
+    radial-gradient(circle at 1px 1px, rgba(15, 23, 42, 0.08) 1px, transparent 0),
+    linear-gradient(180deg, rgba(255, 251, 235, 0.55), rgba(245, 238, 224, 0.65));
+  background-size:
+    18px 18px,
+    100% 100%;
   background-attachment: fixed;
   color: rgb(15 23 42);
 }
 
 @layer components {
   .case-card {
-    @apply rounded-lg border border-stone-300/90 bg-[#fcfbf8] shadow-sm shadow-amber-950/5 transition-all duration-200 hover:border-stone-300 hover:shadow-md hover:shadow-amber-950/10;
+    @apply rounded-lg border border-stone-300 bg-[#fffdf8] shadow-sm shadow-amber-950/10 ring-1 ring-black/5 transition-all duration-200 hover:-translate-y-0.5 hover:border-stone-400 hover:shadow-md hover:shadow-amber-950/15;
   }
 
   .case-card-critical {
-    @apply rounded-lg border border-amber-400/90 bg-amber-50 shadow-md shadow-amber-900/15;
+    @apply rounded-lg border-2 border-amber-400 bg-amber-50/95 shadow-md shadow-amber-900/20;
   }
 }
 

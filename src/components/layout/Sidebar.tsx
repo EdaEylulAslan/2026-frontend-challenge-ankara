@@ -19,7 +19,7 @@ interface SidebarProps {
 const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
   return (
     <aside
-      className={`w-full shrink-0 overflow-hidden rounded-xl border border-stone-300/90 bg-[#faf8f3] shadow-md shadow-amber-950/10 ring-1 ring-amber-950/10 transition-[width] duration-200 ease-out lg:sticky lg:top-6 lg:self-start ${
+      className={`w-full shrink-0 overflow-hidden rounded-xl border border-stone-400/70 bg-gradient-to-b from-[#f9f3e6] to-[#efe5d1] shadow-lg shadow-amber-950/20 ring-1 ring-black/10 transition-[width] duration-200 ease-out lg:sticky lg:top-6 lg:self-start ${
         collapsed ? 'lg:w-[4.25rem]' : 'lg:w-64'
       }`}
     >
@@ -43,7 +43,7 @@ const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="ml-auto hidden shrink-0 rounded-lg border border-stone-200 p-1.5 text-slate-700 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 lg:ml-0 lg:flex lg:items-center lg:justify-center"
+          className="ml-auto hidden shrink-0 rounded-lg border border-stone-300 bg-white/70 p-1.5 text-slate-700 transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 lg:ml-0 lg:flex lg:items-center lg:justify-center"
           aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'}
         >
           {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
@@ -60,8 +60,8 @@ const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
                 collapsed ? 'lg:justify-center lg:px-2' : ''
               } ${
                 isActive
-                  ? 'border-amber-500 bg-amber-50 text-slate-900'
-                  : 'border-transparent text-slate-600 hover:border-amber-300 hover:bg-stone-100 hover:text-slate-900'
+                  ? 'border-amber-600 bg-amber-100/80 text-slate-900 shadow-sm'
+                  : 'border-transparent text-slate-700 hover:border-amber-400 hover:bg-stone-100/90 hover:text-slate-900'
               }`
             }
           >
@@ -82,7 +82,7 @@ const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
             Case Status
           </p>
           <div className={`mt-1 flex items-center gap-2 ${collapsed ? 'lg:mt-0' : ''}`}>
-            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-red-500 shadow-sm shadow-red-500/50" />
+            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-red-600 shadow-sm shadow-red-600/60" />
             <span
               className={`text-xs font-medium text-slate-700 ${collapsed ? 'lg:sr-only' : ''}`}
             >

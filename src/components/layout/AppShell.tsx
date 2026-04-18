@@ -16,7 +16,7 @@ const AppShell = ({ children }: AppShellProps) => {
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed((c) => !c)}
         />
-        <section className="min-w-0 flex-1">
+        <section className="min-w-0 flex-1 rounded-xl border border-stone-300/70 bg-stone-100/45 p-2 shadow-inner shadow-amber-950/10">
           <Header />
           {children}
         </section>
