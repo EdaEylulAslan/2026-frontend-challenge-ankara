@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import { getSubmissions } from '../api/jotform'
-import { includesPodo } from '../data/podo'
 import { normalizeSubmission } from '../data/normalize'
 import type { FormType, InvestigationRecord } from '../data/types'
 
@@ -35,20 +34,7 @@ const fetchAllRecords = async (): Promise<InvestigationRecord[]> => {
     }),
   )
 
-  const flat = recordsPerForm.flat()
-
-  if (import.meta.env.DEV) {
-    const messages = flat.filter((record) => record.formType === 'messages')
-    const journey = flat.filter(includesPodo)
-    console.info(
-      '[all-records]',
-      `messages=${messages.length}`,
-      `podoJourney=${journey.length}`,
-      `total=${flat.length}`,
-    )
-  }
-
-  return flat
+  return recordsPerForm.flat()
 }
 
 export const useAllRecords = () =>
