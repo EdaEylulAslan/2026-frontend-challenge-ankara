@@ -148,6 +148,11 @@ const TimelinePage = () => {
       <p className="mt-2 text-sm text-slate-600">
         Chronological view of all submitted records across forms.
       </p>
+      <p className="mt-1 text-xs text-slate-500">
+        {mode === 'journey'
+          ? `${podoRecords.length} events in Podo's journey`
+          : `${records.length} total records`}
+      </p>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <button
