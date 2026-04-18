@@ -1,1 +1,31 @@
-// TODO: Implement in upcoming step
+import { parseRecordTimestamp } from '../../data/normalize'
+import type { InvestigationRecord } from '../../data/types'
+import TimelineItem from './TimelineItem'
+
+interface TimelineViewProps {
+  records: InvestigationRecord[]
+}
+
+const getTimestamp = (record: InvestigationRecord): number => {
+  const timestamp = record.fields.timestamp
+  if (typeof timestamp !== 'string') {
+    return 0
+  }
+
+  const parsed = parseRecordTimestamp(timestamp)
+  return Number.isNaN(parsed.getTime()) ? 0 : parsed.getTime()
+}
+
+const TimelineView = ({ records }: TimelineViewProps) => {
+  const sorted = [...records].sort((a, b) => getTimestamp(a) - getTimestamp(b))
+
+  return (
+    <div className="space-y-3">
+      {sorted.map((record) => (
+        <TimelineItem key={`${record.formType}-${record.id}`} record={record} />
+      ))}
+    </div>
+  )
+}
+
+export default TimelineView
