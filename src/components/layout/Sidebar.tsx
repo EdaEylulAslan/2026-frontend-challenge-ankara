@@ -19,7 +19,7 @@ interface SidebarProps {
 const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
   return (
     <aside
-      className={`w-full shrink-0 overflow-hidden rounded-xl border border-stone-200 bg-stone-50/90 shadow-md shadow-amber-900/5 transition-[width] duration-200 ease-out lg:sticky lg:top-6 lg:self-start ${
+      className={`w-full shrink-0 overflow-hidden rounded-xl border border-stone-300/90 bg-[#faf8f3] shadow-md shadow-amber-950/10 ring-1 ring-amber-950/10 transition-[width] duration-200 ease-out lg:sticky lg:top-6 lg:self-start ${
         collapsed ? 'lg:w-[4.25rem]' : 'lg:w-64'
       }`}
     >

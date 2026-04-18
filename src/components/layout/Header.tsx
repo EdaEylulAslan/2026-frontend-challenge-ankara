@@ -2,7 +2,7 @@ import { Clock3 } from 'lucide-react'
 
 const Header = () => {
   return (
-    <header className="mb-4 rounded-xl border border-stone-200 border-t-4 border-t-amber-500 bg-stone-50/90 p-4 shadow-sm shadow-amber-900/5">
+    <header className="mb-4 rounded-xl border border-stone-300/90 border-t-[6px] border-t-amber-600 bg-[#faf8f3] p-5 shadow-md shadow-amber-950/10 ring-1 ring-amber-950/5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
