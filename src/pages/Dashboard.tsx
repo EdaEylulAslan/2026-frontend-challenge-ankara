@@ -1,5 +1,6 @@
 import { format } from 'date-fns'
 import { Link } from 'react-router-dom'
+import PodoAvatar from '../components/PodoAvatar'
 import EmptyState from '../components/states/EmptyState'
 import ErrorState from '../components/states/ErrorState'
 import LoadingState from '../components/states/LoadingState'
@@ -70,9 +71,7 @@ const Dashboard = () => {
             <p className="text-xs uppercase tracking-wide text-amber-700">Last Seen Podo</p>
             <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex items-start gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-600 text-xl font-semibold text-white">
-                  P
-                </div>
+                <PodoAvatar size="lg" glowing alt="Podo portrait" />
                 <div>
                   <p className="text-xl font-semibold text-amber-900">Podo</p>
                   <p className="text-sm text-amber-800">Missing Subject</p>
