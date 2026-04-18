@@ -7,3 +7,15 @@ export interface NormalizedSubmission {
   createdAt: string
   fields: Record<string, AnswerValue>
 }
+
+export interface PersonIndexEntry {
+  canonicalName: string
+  variants: string[]
+  recordIds: string[]
+}
+
+export interface LocationIndexEntry {
+  coordinateKey: string
+  names: string[]
+  recordIds: string[]
+}
