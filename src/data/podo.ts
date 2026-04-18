@@ -12,6 +12,9 @@ export const includesPodo = (record: InvestigationRecord): boolean => {
     record.fields.personName,
     record.fields.authorName,
     record.fields.suspectName,
+    // Messages form — Podo appears as sender or recipient (see extractRecordPeople in relations.ts)
+    record.fields.senderName,
+    record.fields.recipientName,
   ].filter((value): value is string => typeof value === 'string')
 
   const seenWith = parsePeopleList(
