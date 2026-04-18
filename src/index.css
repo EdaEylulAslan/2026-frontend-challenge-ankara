@@ -89,6 +89,44 @@ body {
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
 }
 
+.map-podo-marker-wrap {
+  background: transparent !important;
+  border: none !important;
+}
+
+.map-podo-marker {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  border: 2px solid #fff;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(127, 29, 29, 0.35);
+}
+
+.map-podo-marker img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.map-podo-marker-badge {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 9999px;
+  background: #dc2626;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid #fff;
+}
+
 @keyframes podo-glow {
   0%,
   100% {

@@ -9,6 +9,7 @@ import {
   TileLayer,
   Tooltip,
 } from 'react-leaflet'
+import { PODO_IMAGE_URL } from '../PodoAvatar'
 import type { LocationIndexEntry } from '../../data/types'
 import type { JourneyMapPoint } from '../../data/journeyMap'
 import { parseCoordinateKey } from '../../utils/coordinates'
@@ -22,21 +23,25 @@ const OSM_ATTRIBUTION =
 type JourneyMarkerVariant = 'single' | 'start' | 'waypoint' | 'last'
 
 const numberedIcon = (order: number, variant: JourneyMarkerVariant): L.DivIcon => {
+  if (variant === 'last' || variant === 'single') {
+    return L.divIcon({
+      className: 'map-podo-marker-wrap',
+      html: `<div class="map-podo-marker map-last-seen-marker"><img src="${PODO_IMAGE_URL}" alt="Podo marker" /><span class="map-podo-marker-badge">${order}</span></div>`,
+      iconSize: [40, 40],
+      iconAnchor: [20, 20],
+      popupAnchor: [0, -20],
+    })
+  }
+
   let bg = '#d97706'
-  let pulseClass = ''
   let extraClass = ''
 
   if (variant === 'start') {
     bg = '#059669'
     extraClass = ' map-start-marker'
   }
-  if (variant === 'last' || variant === 'single') {
-    bg = '#dc2626'
-    pulseClass = ' map-last-seen-marker'
-  }
-
   return L.divIcon({
-    className: `map-number-marker${pulseClass}${extraClass}`,
+    className: `map-number-marker${extraClass}`,
     html: `<div class="map-number-marker-inner" style="background:${bg}">${order}</div>`,
     iconSize: [32, 32],
     iconAnchor: [16, 16],
