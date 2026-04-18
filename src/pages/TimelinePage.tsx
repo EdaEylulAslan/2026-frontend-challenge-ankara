@@ -60,16 +60,17 @@ const TimelinePage = () => {
   const records = data ?? []
   const podoRecords = useMemo(() => records.filter(includesPodo), [records])
   const filteredRecords = useMemo(() => {
+    const sourceRecords = mode === 'journey' ? podoRecords : records
     const normalizedSearch = searchTerm.trim().toLowerCase()
 
-    return records.filter((record) => {
+    return sourceRecords.filter((record) => {
       const matchesForm = formType === 'all' || record.formType === formType
       const matchesSearch =
         normalizedSearch.length === 0 || toSearchableText(record).includes(normalizedSearch)
 
       return matchesForm && matchesSearch
     })
-  }, [formType, records, searchTerm])
+  }, [formType, mode, podoRecords, records, searchTerm])
 
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
