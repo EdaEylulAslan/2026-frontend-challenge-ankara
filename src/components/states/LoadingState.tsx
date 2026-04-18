@@ -1,4 +1,21 @@
-const LoadingState = () => {
+interface LoadingStateProps {
+  /** Taller skeleton for map viewport */
+  variant?: 'default' | 'map'
+}
+
+const LoadingState = ({ variant = 'default' }: LoadingStateProps) => {
+  if (variant === 'map') {
+    return (
+      <div
+        className="animate-pulse rounded-xl border border-slate-200 bg-slate-100 shadow-inner"
+        role="status"
+        aria-label="Loading map"
+      >
+        <div className="h-[min(70vh,640px)] min-h-[420px] rounded-xl bg-gradient-to-br from-slate-200 via-slate-100 to-slate-200" />
+      </div>
+    )
+  }
+
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="animate-pulse space-y-3">

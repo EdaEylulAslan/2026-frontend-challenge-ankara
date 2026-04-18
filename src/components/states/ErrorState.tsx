@@ -14,7 +14,7 @@ const ErrorState = ({
         <button
           type="button"
           onClick={onRetry}
-          className="mt-3 rounded-md bg-rose-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-rose-700"
+          className="mt-3 rounded-md bg-rose-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-rose-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-800"
         >
           Retry
         </button>
