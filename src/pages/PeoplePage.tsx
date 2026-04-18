@@ -6,7 +6,7 @@ import { usePeople } from '../hooks/usePeople'
 
 const PeoplePage = () => {
   const { data, isLoading, isError, error, refetch } = usePeople()
-  const people = data ?? []
+  const people = (data ?? []).filter((person) => person.canonicalName !== 'podo')
 
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
