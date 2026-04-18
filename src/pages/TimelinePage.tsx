@@ -10,6 +10,7 @@ import { parseRecordTimestamp } from '../data/normalize'
 import TimelineView from '../components/timeline/TimelineView'
 import type { FormType, InvestigationRecord } from '../data/types'
 import { useAllRecords } from '../hooks/useAllRecords'
+import { getTimelineEmptyState } from './timelineEmptyState'
 
 const EMPTY_RECORDS: InvestigationRecord[] = []
 
@@ -126,6 +127,29 @@ const TimelinePage = () => {
     )
   }, [lastSeenRecord, mode, postDisappearanceRecords])
 
+  const evidenceIndexByRecordId = useMemo(() => {
+    const sorted = [...records].sort((a, b) => toTimestamp(a) - toTimestamp(b))
+    const map = new Map<string, number>()
+    sorted.forEach((record, index) => {
+      map.set(record.id, index + 1)
+    })
+    return map
+  }, [records])
+
+  const timelineEmpty = useMemo(
+    () =>
+      getTimelineEmptyState({
+        mode,
+        formType,
+        searchTerm,
+        records,
+        podoRecords,
+        filteredCount: filteredRecords.length,
+        setMode,
+      }),
+    [mode, formType, searchTerm, records, podoRecords, filteredRecords.length, setMode],
+  )
+
   return (
     <section className="case-card p-6">
       <h2 className="font-serif text-2xl font-semibold text-slate-900">Timeline</h2>
@@ -176,20 +200,29 @@ const TimelinePage = () => {
             onRetry={() => void refetch()}
           />
         ) : null}
-        {!isLoading && !isError && filteredRecords.length === 0 ? <EmptyState /> : null}
+        {!isLoading && !isError && filteredRecords.length === 0 && timelineEmpty ? (
+          <EmptyState
+            message={timelineEmpty.message}
+            subtitle={timelineEmpty.subtitle}
+            actionLabel={timelineEmpty.actionLabel}
+            onAction={timelineEmpty.onAction}
+            showIllustration={timelineEmpty.showIllustration}
+          />
+        ) : null}
         {!isLoading && !isError && filteredRecords.length > 0 ? (
           <>
             <TimelineView
               records={preDisappearanceRecords}
               lastSeenRecordId={lastSeenRecord?.id}
               showDisappearanceSeparatorAfterId={lastSeenRecord?.id}
+              evidenceIndexByRecordId={evidenceIndexByRecordId}
             />
             {mode === 'all' && postDisappearanceRecords.length > 0 ? (
-              <section className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <h3 className="text-sm font-semibold text-slate-800">
-                  🕵️ Activity after Podo&apos;s disappearance
+              <section className="mt-8 rounded-xl border-2 border-rose-200/80 bg-gradient-to-br from-rose-50/90 to-stone-50/80 p-4 shadow-inner shadow-rose-900/5">
+                <h3 className="font-serif text-sm font-semibold text-rose-950">
+                  Activity after Podo&apos;s disappearance
                 </h3>
-                <p className="mt-1 text-xs text-slate-600">
+                <p className="mt-1 text-xs text-rose-900/70">
                   Events reported after the last confirmed sighting.
                 </p>
                 <div className="mt-3">
@@ -197,6 +230,7 @@ const TimelinePage = () => {
                     records={postDisappearanceRecords}
                     mutedRecordIds={new Set(postDisappearanceRecords.map((record) => record.id))}
                     highlightedRecordIds={highlightedSuspiciousIds}
+                    evidenceIndexByRecordId={evidenceIndexByRecordId}
                   />
                 </div>
               </section>

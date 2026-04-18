@@ -1,3 +1,4 @@
+import { getFormTypeLabel } from '../../data/formLabels'
 import type { FormType } from '../../data/types'
 
 interface FormTypeFilterProps {
@@ -5,14 +6,19 @@ interface FormTypeFilterProps {
   onChange: (value: FormType | 'all') => void
 }
 
-const options: Array<{ value: FormType | 'all'; label: string }> = [
-  { value: 'all', label: 'All' },
-  { value: 'checkins', label: 'Check-ins' },
-  { value: 'messages', label: 'Messages' },
-  { value: 'sightings', label: 'Sightings' },
-  { value: 'notes', label: 'Notes' },
-  { value: 'tips', label: 'Tips' },
+const FORM_TYPE_VALUES: Array<FormType | 'all'> = [
+  'all',
+  'checkins',
+  'messages',
+  'sightings',
+  'notes',
+  'tips',
 ]
+
+const options: Array<{ value: FormType | 'all'; label: string }> = FORM_TYPE_VALUES.map((value) => ({
+  value,
+  label: getFormTypeLabel(value),
+}))
 
 const FormTypeFilter = ({ value, onChange }: FormTypeFilterProps) => {
   return (
