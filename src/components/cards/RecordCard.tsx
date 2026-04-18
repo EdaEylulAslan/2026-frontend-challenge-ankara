@@ -7,6 +7,8 @@ import type { InvestigationRecord } from '../../data/types'
 
 interface RecordCardProps {
   record: InvestigationRecord
+  onClick?: () => void
+  className?: string
 }
 
 const getPrimaryText = (record: InvestigationRecord): string => {
@@ -36,7 +38,7 @@ const getDisplayTime = (record: InvestigationRecord): string => {
   return format(parsed, 'dd MMM yyyy, HH:mm')
 }
 
-const RecordCard = ({ record }: RecordCardProps) => {
+const RecordCard = ({ record, onClick, className }: RecordCardProps) => {
   const location =
     typeof record.fields.location === 'string' ? record.fields.location : 'Unknown location'
   const person =
@@ -48,7 +50,10 @@ const RecordCard = ({ record }: RecordCardProps) => {
   const isSubjectRecord = canonicalizePerson(person) === 'podo'
 
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <article
+      onClick={onClick}
+      className={`rounded-xl border border-slate-200 bg-white p-4 shadow-sm ${className ?? ''}`}
+    >
       <div className="flex items-center justify-between gap-3">
         <RecordTypeBadge formType={record.formType} />
         <span className="text-xs text-slate-500">{getDisplayTime(record)}</span>

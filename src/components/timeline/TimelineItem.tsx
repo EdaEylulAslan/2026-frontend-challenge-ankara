@@ -1,6 +1,9 @@
 import { format } from 'date-fns'
+import { useNavigate } from 'react-router-dom'
 import RecordCard from '../cards/RecordCard'
+import { canonicalizePerson } from '../../data/canonicalize'
 import { parseRecordTimestamp } from '../../data/normalize'
+import { parsePeopleList } from '../../data/normalize'
 import type { FormType, InvestigationRecord } from '../../data/types'
 
 const dotColors: Record<FormType, string> = {
@@ -33,6 +36,26 @@ const getParsedTimestamp = (record: InvestigationRecord): Date | undefined => {
 const connectorClass = (style: 'solid' | 'dashed'): string =>
   style === 'dashed' ? 'border-l border-dashed border-slate-300' : 'border-l border-slate-300'
 
+const getNavigationTarget = (record: InvestigationRecord): string | undefined => {
+  const directCandidates = [
+    record.fields.personName,
+    record.fields.senderName,
+    record.fields.suspectName,
+  ].filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+
+  const seenWithCandidates = parsePeopleList(
+    typeof record.fields.seenWith === 'string' ? record.fields.seenWith : undefined,
+  )
+
+  const candidate = [...directCandidates, ...seenWithCandidates][0]
+  if (!candidate) {
+    return undefined
+  }
+
+  const canonical = canonicalizePerson(candidate)
+  return canonical.length > 0 ? canonical : undefined
+}
+
 const TimelineItem = ({
   record,
   isFirst,
@@ -40,9 +63,11 @@ const TimelineItem = ({
   topConnector,
   bottomConnector,
 }: TimelineItemProps) => {
+  const navigate = useNavigate()
   const parsed = getParsedTimestamp(record)
   const timeLabel = parsed ? format(parsed, 'HH:mm') : '--:--'
   const dateLabel = parsed ? format(parsed, 'dd MMM') : 'Unknown date'
+  const navigationTarget = getNavigationTarget(record)
 
   return (
     <article className="grid grid-cols-[84px_32px_minmax(0,1fr)] gap-3">
@@ -63,7 +88,15 @@ const TimelineItem = ({
         ) : null}
       </div>
 
-      <RecordCard record={record} />
+      <RecordCard
+        record={record}
+        onClick={() => {
+          if (navigationTarget) {
+            navigate(`/people/${encodeURIComponent(navigationTarget)}`)
+          }
+        }}
+        className={navigationTarget ? 'cursor-pointer transition hover:shadow-md' : ''}
+      />
     </article>
   )
 }
