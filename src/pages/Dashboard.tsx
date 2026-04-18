@@ -15,6 +15,7 @@ import { useLocations } from '../hooks/useLocations'
 import { usePeople } from '../hooks/usePeople'
 
 const statCardStyles = 'rounded-xl border border-slate-200 bg-white p-4 shadow-sm'
+const rankBadgeStyles = ['bg-rose-600', 'bg-orange-500', 'bg-amber-500']
 
 const Dashboard = () => {
   const recordsQuery = useAllRecords()
@@ -112,7 +113,11 @@ const Dashboard = () => {
                   className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-300 hover:shadow-sm"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="rounded-full bg-slate-900 px-2 py-0.5 text-xs font-semibold text-white">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-semibold text-white ${
+                        rankBadgeStyles[index] ?? 'bg-slate-900'
+                      }`}
+                    >
                       #{index + 1}
                     </span>
                     <p className="text-2xl font-bold text-slate-900">{suspect.score}</p>
