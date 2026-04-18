@@ -36,3 +36,27 @@
     box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
   }
 }
+
+.map-start-marker .map-number-marker-inner {
+  box-shadow:
+    0 0 0 3px rgba(16, 185, 129, 0.4),
+    0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.map-route-arrow-wrap {
+  background: transparent !important;
+  border: none !important;
+}
+
+.map-route-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  color: #7c2d12;
+  font-size: 11px;
+  line-height: 1;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}

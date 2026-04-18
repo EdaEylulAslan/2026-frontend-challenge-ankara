@@ -1,26 +1,56 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import L from 'leaflet'
-import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
+import {
+  MapContainer,
+  Marker,
+  Polyline,
+  Popup,
+  TileLayer,
+  Tooltip,
+} from 'react-leaflet'
 import type { LocationIndexEntry } from '../../data/types'
 import type { JourneyMapPoint } from '../../data/journeyMap'
 import { parseCoordinateKey } from '../../utils/coordinates'
+import { bearingBetween, midpoint } from '../../utils/geo'
+import MapViewController from './MapViewController'
 
 const ANKARA_CENTER: [number, number] = [39.9334, 32.8597]
 const OSM_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 
-const numberedIcon = (order: number, variant: 'amber' | 'last'): L.DivIcon => {
-  const isLast = variant === 'last'
-  const bg = isLast ? '#dc2626' : '#d97706'
-  const pulseClass = isLast ? ' map-last-seen-marker' : ''
+type JourneyMarkerVariant = 'single' | 'start' | 'waypoint' | 'last'
+
+const numberedIcon = (order: number, variant: JourneyMarkerVariant): L.DivIcon => {
+  let bg = '#d97706'
+  let pulseClass = ''
+  let extraClass = ''
+
+  if (variant === 'start') {
+    bg = '#059669'
+    extraClass = ' map-start-marker'
+  }
+  if (variant === 'last' || variant === 'single') {
+    bg = '#dc2626'
+    pulseClass = ' map-last-seen-marker'
+  }
 
   return L.divIcon({
-    className: `map-number-marker${pulseClass}`,
+    className: `map-number-marker${pulseClass}${extraClass}`,
     html: `<div class="map-number-marker-inner" style="background:${bg}">${order}</div>`,
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-    popupAnchor: [0, -14],
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16],
+  })
+}
+
+const arrowIcon = (bearingDeg: number): L.DivIcon => {
+  const normalized = ((bearingDeg % 360) + 360) % 360
+  return L.divIcon({
+    className: 'map-route-arrow-wrap',
+    html: `<div class="map-route-arrow" style="transform:rotate(${normalized}deg)" aria-hidden="true">▲</div>`,
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
   })
 }
 
@@ -48,6 +78,40 @@ const InvestigationMap = ({ locations, journeyPoints, showRoute }: Investigation
     [journeyPoints],
   )
 
+  const journeyPositions = useMemo(
+    () => journeyPoints.map((point) => point.position),
+    [journeyPoints],
+  )
+
+  const locationPositions = useMemo(
+    () =>
+      locations
+        .map((loc) => parseCoordinateKey(loc.coordinateKey))
+        .filter((pos): pos is [number, number] => pos !== undefined),
+    [locations],
+  )
+
+  const segmentArrows = useMemo(() => {
+    if (!showRoute || journeyPoints.length < 2) {
+      return []
+    }
+
+    const positions = journeyPoints.map((point) => point.position)
+    const items: { key: string; position: [number, number]; bearing: number }[] = []
+
+    for (let i = 0; i < positions.length - 1; i += 1) {
+      const a = positions[i]
+      const b = positions[i + 1]
+      items.push({
+        key: `arrow-${i}`,
+        position: midpoint(a, b),
+        bearing: bearingBetween(a, b),
+      })
+    }
+
+    return items
+  }, [journeyPoints, showRoute])
+
   const locationMarkers = useMemo(() => {
     if (showRoute) {
       return locations.filter((loc) => !journeyCoordinateKeys.has(loc.coordinateKey))
@@ -58,13 +122,21 @@ const InvestigationMap = ({ locations, journeyPoints, showRoute }: Investigation
   const lastJourneyRecordId =
     journeyPoints.length > 0 ? journeyPoints[journeyPoints.length - 1]?.record.id : undefined
 
+  const totalStops = journeyPoints.length
+
   return (
     <MapContainer
       center={ANKARA_CENTER}
       zoom={13}
-      className="z-0 h-[min(70vh,640px)] w-full rounded-xl border border-slate-200"
+      className="z-0 h-[min(70vh,640px)] w-full rounded-xl border border-slate-200 min-h-[420px] transition-shadow focus-within:ring-2 focus-within:ring-amber-500/30"
       scrollWheelZoom
     >
+      <MapViewController
+        showRoute={showRoute}
+        journeyPositions={journeyPositions}
+        locationPositions={locationPositions}
+      />
+
       <TileLayer attribution={OSM_ATTRIBUTION} url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
       {locationMarkers.map((location) => {
@@ -94,30 +166,89 @@ const InvestigationMap = ({ locations, journeyPoints, showRoute }: Investigation
       })}
 
       {showRoute && journeyPoints.length > 1 ? (
-        <Polyline
-          pathOptions={{
-            color: '#f59e0b',
-            weight: 3,
-            dashArray: '10 8',
-            lineCap: 'round',
-          }}
-          positions={polylinePositions}
-        />
+        <>
+          <Polyline
+            pathOptions={{
+              color: '#fdba74',
+              weight: 12,
+              opacity: 0.45,
+              lineCap: 'round',
+              lineJoin: 'round',
+            }}
+            positions={polylinePositions}
+          />
+          <Polyline
+            pathOptions={{
+              color: '#9a3412',
+              weight: 5,
+              opacity: 0.95,
+              lineCap: 'round',
+              lineJoin: 'round',
+            }}
+            positions={polylinePositions}
+          />
+        </>
       ) : null}
+
+      {showRoute
+        ? segmentArrows.map((arrow) => (
+            <Marker
+              key={arrow.key}
+              position={arrow.position}
+              icon={arrowIcon(arrow.bearing)}
+              interactive={false}
+              zIndexOffset={-200}
+            />
+          ))
+        : null}
 
       {showRoute
         ? journeyPoints.map((point) => {
             const isLast = point.record.id === lastJourneyRecordId
-            const icon = numberedIcon(point.order, isLast ? 'last' : 'amber')
+            const isFirst = point.order === 1
+            const variant: JourneyMarkerVariant =
+              totalStops === 1 ? 'single' : isLast ? 'last' : isFirst ? 'start' : 'waypoint'
+
+            const icon = numberedIcon(point.order, variant)
+
+            const tooltipText =
+              totalStops === 1
+                ? 'Start & last seen'
+                : isFirst
+                  ? 'Start here'
+                  : isLast
+                    ? 'Last seen'
+                    : undefined
+
             return (
-              <Marker key={`journey-${point.record.id}`} position={point.position} icon={icon}>
+              <Marker
+                key={`journey-${point.record.id}`}
+                position={point.position}
+                icon={icon}
+                zIndexOffset={600}
+              >
+                {tooltipText ? (
+                  <Tooltip permanent direction="top" offset={[0, -10]} opacity={0.95}>
+                    <span className="text-xs font-semibold text-slate-800">{tooltipText}</span>
+                  </Tooltip>
+                ) : null}
                 <Popup>
                   <div className="min-w-[10rem] text-slate-900">
                     <p className="text-xs font-semibold uppercase tracking-wide text-amber-800">
-                      Podo&apos;s journey · Stop {point.order}
+                      Podo&apos;s journey · Stop {point.order} of {totalStops}
                     </p>
-                    {isLast ? (
-                      <p className="mt-1 text-xs font-semibold text-red-700">Last seen</p>
+                    {totalStops === 1 ? (
+                      <p className="mt-1 text-xs font-medium text-slate-700">
+                        Only coordinate with a timestamp on this route.
+                      </p>
+                    ) : null}
+                    {totalStops > 1 && isFirst ? (
+                      <p className="mt-1 text-xs font-semibold text-emerald-700">
+                        Chronological start
+                      </p>
+                    ) : null}
+                    {totalStops > 1 && isLast ? (
+                      <p className="mt-1 text-xs font-semibold text-red-700">Last confirmed sighting</p>
                     ) : null}
                     <p className="mt-1 text-sm font-medium">
                       {typeof point.record.fields.location === 'string'
