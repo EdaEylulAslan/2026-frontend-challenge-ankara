@@ -114,7 +114,7 @@ const RecordCard = ({ record, onPersonClick, className }: RecordCardProps) => {
   )
 
   return (
-    <article className={`rounded-xl border border-slate-200 bg-white p-4 shadow-sm ${className ?? ''}`}>
+    <article className={`case-card p-4 ${className ?? ''}`}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <RecordTypeBadge formType={record.formType} />

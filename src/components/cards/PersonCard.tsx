@@ -13,7 +13,7 @@ const PersonCard = ({ person }: PersonCardProps) => {
   return (
     <Link
       to={`/people/${encodeURIComponent(person.canonicalName)}`}
-      className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-slate-300 hover:shadow"
+      className="case-card block p-4"
     >
       <div className="flex items-start gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">

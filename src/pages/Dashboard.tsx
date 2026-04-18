@@ -51,7 +51,7 @@ const Dashboard = () => {
 
   return (
     <section className="space-y-4">
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="case-card p-6">
         <h2 className="font-serif text-2xl font-semibold text-slate-900">Dashboard</h2>
         <p className="mt-2 text-sm text-slate-600">
           High-level metrics and key lead signals for the investigation.
@@ -66,7 +66,7 @@ const Dashboard = () => {
 
       {!isLoading && !isError && records.length > 0 ? (
         <>
-          <section className="rounded-xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
+          <section className="case-card-critical p-5">
             <p className="text-xs uppercase tracking-wide text-amber-700">Last Seen Podo</p>
             <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex items-start gap-4">
@@ -99,7 +99,7 @@ const Dashboard = () => {
             </div>
           </section>
 
-          <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="case-card p-5">
             <h3 className="text-lg font-semibold text-slate-900">🔍 Persons of Interest</h3>
             <p className="mt-1 text-sm text-slate-600">
               Ranked by involvement in Podo&apos;s last known hours.
@@ -110,7 +110,7 @@ const Dashboard = () => {
                 <Link
                   key={suspect.canonicalName}
                   to={`/people/${encodeURIComponent(suspect.canonicalName)}`}
-                  className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-300 hover:shadow-sm"
+                  className="case-card bg-stone-50 p-4"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span

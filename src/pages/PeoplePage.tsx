@@ -10,7 +10,7 @@ const PeoplePage = () => {
   const people = (data ?? []).filter((person) => person.canonicalName !== 'podo')
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section className="case-card p-6">
       <h2 className="font-serif text-2xl font-semibold text-slate-900">People</h2>
       <p className="mt-2 text-sm text-slate-600">
         Fuzzy-grouped person entities with known name variants.

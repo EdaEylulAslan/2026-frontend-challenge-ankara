@@ -11,7 +11,7 @@ const LocationCard = ({ location }: LocationCardProps) => {
   return (
     <Link
       to={`/locations/${encodeURIComponent(location.coordinateKey)}`}
-      className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-slate-300 hover:shadow"
+      className="case-card block p-4"
     >
       <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
       <p className="mt-1 text-xs text-slate-500">{location.coordinateKey}</p>

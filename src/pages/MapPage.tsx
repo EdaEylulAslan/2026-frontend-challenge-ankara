@@ -26,7 +26,7 @@ const MapPage = () => {
   const maxStop = journeyPoints.length
 
   return (
-    <section className="mx-auto w-full max-w-[1400px] rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+    <section className="mx-auto w-full max-w-[1400px] case-card p-4 sm:p-6">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h2 className="font-serif text-2xl font-semibold text-slate-900">Map</h2>
