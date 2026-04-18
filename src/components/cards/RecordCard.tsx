@@ -8,7 +8,7 @@ import type { InvestigationRecord } from '../../data/types'
 
 interface RecordCardProps {
   record: InvestigationRecord
-  onClick?: () => void
+  onPersonClick?: (name: string) => void
   className?: string
 }
 
@@ -25,7 +25,11 @@ const getPrimaryText = (record: InvestigationRecord): string => {
   return 'No additional details.'
 }
 
-const getRelationshipText = (record: InvestigationRecord): string => {
+interface RelationshipMeta {
+  segments: Array<{ text: string; clickableName?: string }>
+}
+
+const getRelationshipMeta = (record: InvestigationRecord): RelationshipMeta => {
   const personName =
     typeof record.fields.personName === 'string' ? record.fields.personName : undefined
   const senderName =
@@ -40,26 +44,49 @@ const getRelationshipText = (record: InvestigationRecord): string => {
       : []
 
   if (personName && canonicalizePerson(personName) === 'podo' && seenWith[0]) {
-    return `Podo with ${seenWith[0]}`
+    return {
+      segments: [
+        { text: 'Podo', clickableName: 'Podo' },
+        { text: ' with ' },
+        { text: seenWith[0], clickableName: seenWith[0] },
+      ],
+    }
   }
 
   if (personName && seenWith.some((name) => canonicalizePerson(name) === 'podo')) {
-    return `${personName} with Podo`
+    return {
+      segments: [
+        { text: personName, clickableName: personName },
+        { text: ' with ' },
+        { text: 'Podo', clickableName: 'Podo' },
+      ],
+    }
   }
 
   if (authorName && mentionedPeople.some((name) => canonicalizePerson(name) === 'podo')) {
-    return `${authorName} mentioned Podo`
+    return {
+      segments: [
+        { text: authorName, clickableName: authorName },
+        { text: ' mentioned ' },
+        { text: 'Podo', clickableName: 'Podo' },
+      ],
+    }
   }
 
   if (senderName) {
-    return `${senderName} sent a message`
+    return {
+      segments: [
+        { text: senderName, clickableName: senderName },
+        { text: ' sent a message' },
+      ],
+    }
   }
 
   if (personName) {
-    return personName
+    return { segments: [{ text: personName, clickableName: personName }] }
   }
 
-  return 'Unknown relation'
+  return { segments: [{ text: 'Unknown relation' }] }
 }
 
 const getDisplayTime = (record: InvestigationRecord): string => {
@@ -76,17 +103,18 @@ const getDisplayTime = (record: InvestigationRecord): string => {
   return format(parsed, 'dd MMM yyyy, HH:mm')
 }
 
-const RecordCard = ({ record, onClick, className }: RecordCardProps) => {
+const RecordCard = ({ record, onPersonClick, className }: RecordCardProps) => {
   const location =
     typeof record.fields.location === 'string' ? record.fields.location : 'Unknown location'
-  const relationshipText = getRelationshipText(record)
-  const isSubjectRecord = canonicalizePerson(relationshipText).includes('podo')
+  const relationship = getRelationshipMeta(record)
+  const isSubjectRecord = relationship.segments.some(
+    (segment) =>
+      typeof segment.clickableName === 'string' &&
+      canonicalizePerson(segment.clickableName) === 'podo',
+  )
 
   return (
-    <article
-      onClick={onClick}
-      className={`rounded-xl border border-slate-200 bg-white p-4 shadow-sm ${className ?? ''}`}
-    >
+    <article className={`rounded-xl border border-slate-200 bg-white p-4 shadow-sm ${className ?? ''}`}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <RecordTypeBadge formType={record.formType} />
@@ -98,7 +126,27 @@ const RecordCard = ({ record, onClick, className }: RecordCardProps) => {
         <span className="text-xs text-slate-500">{getDisplayTime(record)}</span>
       </div>
       <div className="mt-3 flex items-center gap-2">
-        <h3 className="text-sm font-semibold text-slate-900">{relationshipText}</h3>
+        <h3 className="text-sm font-semibold text-slate-900">
+          {relationship.segments.map((segment, index) => {
+            if (segment.clickableName && onPersonClick) {
+              return (
+                <button
+                  key={`${segment.text}-${index}`}
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    onPersonClick(segment.clickableName as string)
+                  }}
+                  className="cursor-pointer underline decoration-slate-300 underline-offset-2 transition hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-1"
+                >
+                  {segment.text}
+                </button>
+              )
+            }
+
+            return <span key={`${segment.text}-${index}`}>{segment.text}</span>
+          })}
+        </h3>
         {isSubjectRecord ? <SubjectBadge /> : null}
       </div>
       <p className="mt-1 text-sm text-slate-700">{getPrimaryText(record)}</p>

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import RecordCard from '../cards/RecordCard'
 import { canonicalizePerson } from '../../data/canonicalize'
 import { parseRecordTimestamp } from '../../data/normalize'
-import { parsePeopleList } from '../../data/normalize'
 import type { FormType, InvestigationRecord } from '../../data/types'
 
 const dotColors: Record<FormType, string> = {
@@ -40,34 +39,6 @@ const getParsedTimestamp = (record: InvestigationRecord): Date | undefined => {
 const connectorClass = (style: 'solid' | 'dashed'): string =>
   style === 'dashed' ? 'border-l border-dashed border-slate-300' : 'border-l border-slate-300'
 
-const getNavigationTarget = (record: InvestigationRecord): string | undefined => {
-  const directCandidates = [
-    record.fields.personName,
-    record.fields.senderName,
-    record.fields.suspectName,
-  ].filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
-
-  const seenWithCandidates = parsePeopleList(
-    typeof record.fields.seenWith === 'string' ? record.fields.seenWith : undefined,
-  )
-
-  const allCandidates = [...directCandidates, ...seenWithCandidates]
-  if (allCandidates.length === 0) {
-    return undefined
-  }
-
-  const canonicalCandidates = allCandidates
-    .map((name) => canonicalizePerson(name))
-    .filter((name) => name.length > 0)
-
-  if (canonicalCandidates.length === 0) {
-    return undefined
-  }
-
-  const nonPodoCandidate = canonicalCandidates.find((name) => name !== 'podo')
-  return nonPodoCandidate ?? canonicalCandidates[0]
-}
-
 const TimelineItem = ({
   record,
   isFirst,
@@ -83,7 +54,6 @@ const TimelineItem = ({
   const parsed = getParsedTimestamp(record)
   const timeLabel = parsed ? format(parsed, 'HH:mm') : '--:--'
   const dateLabel = parsed ? format(parsed, 'dd MMM') : 'Unknown date'
-  const navigationTarget = getNavigationTarget(record)
 
   return (
     <article className="grid grid-cols-[84px_32px_minmax(0,1fr)] gap-3">
@@ -112,16 +82,15 @@ const TimelineItem = ({
         ) : null}
         <RecordCard
           record={record}
-          onClick={() => {
-            if (navigationTarget) {
-              navigate(`/people/${encodeURIComponent(navigationTarget)}`)
+          onPersonClick={(name) => {
+            const canonical = canonicalizePerson(name)
+            if (canonical.length > 0) {
+              navigate(`/people/${encodeURIComponent(canonical)}`)
             }
           }}
-          className={`${navigationTarget ? 'cursor-pointer transition hover:shadow-md' : ''} ${
-            isLastSeen ? 'border-l-4 border-l-amber-500 bg-amber-50/40 p-5' : ''
-          } ${isMuted ? 'opacity-80' : ''} ${
-            isHighlighted ? 'border border-rose-200 bg-rose-50/40' : ''
-          }`}
+          className={`${isLastSeen ? 'border-l-4 border-l-amber-500 bg-amber-50/40 p-5' : ''} ${
+            isMuted ? 'opacity-80' : ''
+          } ${isHighlighted ? 'border border-rose-200 bg-rose-50/40' : ''}`}
         />
         {showDisappearanceSeparator ? (
           <p className="mt-3 text-center text-xs text-slate-500">
