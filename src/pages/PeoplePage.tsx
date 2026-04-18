@@ -1,4 +1,5 @@
 import PersonCard from '../components/cards/PersonCard'
+import PodoAvatar from '../components/PodoAvatar'
 import EmptyState from '../components/states/EmptyState'
 import ErrorState from '../components/states/ErrorState'
 import LoadingState from '../components/states/LoadingState'
@@ -22,9 +23,7 @@ const PeoplePage = () => {
         </p>
         <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-600 text-lg font-semibold text-white">
-              P
-            </div>
+            <PodoAvatar size="xl" glowing alt="Podo missing subject" />
             <div>
               <h3 className="text-xl font-semibold text-amber-900">Podo</h3>
               <p className="text-sm text-amber-800">Missing Subject</p>
