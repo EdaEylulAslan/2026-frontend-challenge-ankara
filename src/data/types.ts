@@ -8,6 +8,12 @@ export interface NormalizedSubmission {
   fields: Record<string, AnswerValue>
 }
 
+export type FormType = 'checkins' | 'messages' | 'sightings' | 'notes' | 'tips'
+
+export interface InvestigationRecord extends NormalizedSubmission {
+  formType: FormType
+}
+
 export interface PersonIndexEntry {
   canonicalName: string
   variants: string[]
