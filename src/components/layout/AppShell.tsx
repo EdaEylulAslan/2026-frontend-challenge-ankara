@@ -10,7 +10,7 @@ const AppShell = ({ children }: AppShellProps) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-6 lg:px-8">
+    <main className="min-h-screen bg-stone-50/80 px-4 py-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-4 lg:flex-row lg:items-start lg:gap-6">
         <Sidebar
           collapsed={sidebarCollapsed}
