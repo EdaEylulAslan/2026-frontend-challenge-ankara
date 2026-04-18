@@ -6,6 +6,7 @@ import LoadingState from '../components/states/LoadingState'
 import {
   buildDashboardStats,
   buildLastSeenSummary,
+  buildSuspicionScores,
   formatElapsedFromFirstCheckIn,
 } from '../data/dashboard'
 import { parseRecordTimestamp } from '../data/normalize'
@@ -31,6 +32,7 @@ const Dashboard = () => {
   const people = peopleQuery.data ?? []
   const locations = locationsQuery.data ?? []
   const stats = buildDashboardStats(records, people.length, locations.length)
+  const suspects = buildSuspicionScores(records).slice(0, 3)
   const lastSeenSummary = buildLastSeenSummary(records)
 
   const lastSeenTime =
@@ -93,6 +95,41 @@ const Dashboard = () => {
               >
                 View Journey
               </Link>
+            </div>
+          </section>
+
+          <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="text-lg font-semibold text-slate-900">🔍 Persons of Interest</h3>
+            <p className="mt-1 text-sm text-slate-600">
+              Ranked by involvement in Podo&apos;s last known hours.
+            </p>
+
+            <div className="mt-4 grid gap-3 xl:grid-cols-3">
+              {suspects.map((suspect, index) => (
+                <Link
+                  key={suspect.canonicalName}
+                  to={`/people/${encodeURIComponent(suspect.canonicalName)}`}
+                  className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-300 hover:shadow-sm"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="rounded-full bg-slate-900 px-2 py-0.5 text-xs font-semibold text-white">
+                      #{index + 1}
+                    </span>
+                    <p className="text-2xl font-bold text-slate-900">{suspect.score}</p>
+                  </div>
+                  <p className="mt-3 text-base font-semibold capitalize text-slate-900">
+                    {suspect.canonicalName}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-600">
+                    Also known as: {suspect.variants.join(', ')}
+                  </p>
+                  <ul className="mt-3 space-y-1 text-xs text-slate-700">
+                    {suspect.reasons.slice(0, 3).map((reason) => (
+                      <li key={reason}>• {reason}</li>
+                    ))}
+                  </ul>
+                </Link>
+              ))}
             </div>
           </section>
 
