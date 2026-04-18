@@ -21,8 +21,13 @@ const TimelineView = ({ records }: TimelineViewProps) => {
 
   return (
     <div className="space-y-3">
-      {sorted.map((record) => (
-        <TimelineItem key={`${record.formType}-${record.id}`} record={record} />
+      {sorted.map((record, index) => (
+        <TimelineItem
+          key={`${record.formType}-${record.id}`}
+          record={record}
+          isFirst={index === 0}
+          isLast={index === sorted.length - 1}
+        />
       ))}
     </div>
   )
