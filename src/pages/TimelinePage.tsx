@@ -176,9 +176,7 @@ const TimelinePage = () => {
             onRetry={() => void refetch()}
           />
         ) : null}
-        {!isLoading && !isError && filteredRecords.length === 0 ? (
-          <EmptyState message="No records match your filters." />
-        ) : null}
+        {!isLoading && !isError && filteredRecords.length === 0 ? <EmptyState /> : null}
         {!isLoading && !isError && filteredRecords.length > 0 ? (
           <>
             <TimelineView
