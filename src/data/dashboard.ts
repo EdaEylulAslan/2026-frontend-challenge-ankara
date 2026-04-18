@@ -109,6 +109,7 @@ export interface SuspectScoreEntry {
   score: number
   variants: string[]
   reasons: string[]
+  topReasons: string[]
 }
 
 export const buildLastSeenSummary = (
@@ -160,6 +161,7 @@ export const buildSuspicionScores = (records: InvestigationRecord[]): SuspectSco
         score: 0,
         variants: peopleIndex[canonicalName]?.variants ?? [canonicalName],
         reasons: [],
+        topReasons: [],
       }
     }
     return scoreMap[canonicalName]
@@ -245,6 +247,22 @@ export const buildSuspicionScores = (records: InvestigationRecord[]): SuspectSco
 
   return Object.values(scoreMap)
     .filter((entry) => entry.score > 0)
+    .map((entry) => {
+      const frequency: Record<string, number> = {}
+      for (const reason of entry.reasons) {
+        frequency[reason] = (frequency[reason] ?? 0) + 1
+      }
+
+      const topReasons = Object.entries(frequency)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([reason]) => reason)
+
+      return {
+        ...entry,
+        topReasons,
+      }
+    })
     .sort((a, b) => b.score - a.score)
 }
 

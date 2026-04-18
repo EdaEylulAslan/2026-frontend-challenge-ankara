@@ -124,7 +124,7 @@ const Dashboard = () => {
                     Also known as: {suspect.variants.join(', ')}
                   </p>
                   <ul className="mt-3 space-y-1 text-xs text-slate-700">
-                    {suspect.reasons.slice(0, 3).map((reason) => (
+                    {suspect.topReasons.map((reason) => (
                       <li key={reason}>• {reason}</li>
                     ))}
                   </ul>
