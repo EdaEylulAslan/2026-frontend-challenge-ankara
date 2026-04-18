@@ -9,7 +9,7 @@ import {
   TileLayer,
   Tooltip,
 } from 'react-leaflet'
-import { PODO_IMAGE_URL } from '../PodoAvatar'
+import { PODO_IMAGE_URL } from '../../constants/podoAsset'
 import type { LocationIndexEntry } from '../../data/types'
 import type { JourneyMapPoint } from '../../data/journeyMap'
 import { parseCoordinateKey } from '../../utils/coordinates'

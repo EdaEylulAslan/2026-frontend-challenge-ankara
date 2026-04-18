@@ -1,6 +1,5 @@
 import { useState } from 'react'
-
-export const PODO_IMAGE_URL = 'https://cdn.jotfor.ms/assets/resources/podo/n_podo_2.png'
+import { PODO_IMAGE_URL } from '../constants/podoAsset'
 
 type PodoAvatarSize = 'sm' | 'md' | 'lg' | 'xl'
 
@@ -47,6 +46,7 @@ const PodoAvatar = ({
       src={PODO_IMAGE_URL}
       alt={alt}
       loading="lazy"
+      decoding="async"
       onError={() => setHasError(true)}
       className={`${baseClasses} ${glowClasses} ${className}`}
     />
