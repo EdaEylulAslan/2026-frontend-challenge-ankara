@@ -1,8 +1,13 @@
 import { format } from 'date-fns'
+import { Link } from 'react-router-dom'
 import EmptyState from '../components/states/EmptyState'
 import ErrorState from '../components/states/ErrorState'
 import LoadingState from '../components/states/LoadingState'
-import { buildDashboardStats, findLastSeenPodoRecord } from '../data/dashboard'
+import {
+  buildDashboardStats,
+  buildLastSeenSummary,
+  formatElapsedFromFirstCheckIn,
+} from '../data/dashboard'
 import { parseRecordTimestamp } from '../data/normalize'
 import { useAllRecords } from '../hooks/useAllRecords'
 import { useLocations } from '../hooks/useLocations'
@@ -26,22 +31,14 @@ const Dashboard = () => {
   const people = peopleQuery.data ?? []
   const locations = locationsQuery.data ?? []
   const stats = buildDashboardStats(records, people.length, locations.length)
-  const lastSeenPodo = findLastSeenPodoRecord(records)
+  const lastSeenSummary = buildLastSeenSummary(records)
 
   const lastSeenTime =
-    lastSeenPodo && typeof lastSeenPodo.fields.timestamp === 'string'
-      ? format(parseRecordTimestamp(lastSeenPodo.fields.timestamp), 'dd MMM yyyy, HH:mm')
+    lastSeenSummary && typeof lastSeenSummary.record.fields.timestamp === 'string'
+      ? format(parseRecordTimestamp(lastSeenSummary.record.fields.timestamp), 'dd MMM yyyy, HH:mm')
       : undefined
 
-  const lastSeenLocation =
-    lastSeenPodo && typeof lastSeenPodo.fields.location === 'string'
-      ? lastSeenPodo.fields.location
-      : 'Unknown location'
-
-  const lastSeenWith =
-    lastSeenPodo && typeof lastSeenPodo.fields.seenWith === 'string'
-      ? lastSeenPodo.fields.seenWith
-      : 'Unknown'
+  const elapsed = formatElapsedFromFirstCheckIn(lastSeenSummary)
 
   const retryAll = () => {
     void recordsQuery.refetch()
@@ -66,6 +63,39 @@ const Dashboard = () => {
 
       {!isLoading && !isError && records.length > 0 ? (
         <>
+          <section className="rounded-xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
+            <p className="text-xs uppercase tracking-wide text-amber-700">Last Seen Podo</p>
+            <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-start gap-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-600 text-xl font-semibold text-white">
+                  P
+                </div>
+                <div>
+                  <p className="text-xl font-semibold text-amber-900">Podo</p>
+                  <p className="text-sm text-amber-800">Missing Subject</p>
+                  {lastSeenSummary ? (
+                    <p className="mt-2 text-sm text-amber-900">
+                      Last seen at <strong>{lastSeenSummary.lastSeenLocation}</strong> with{' '}
+                      <strong>{lastSeenSummary.lastSeenWith}</strong>
+                      {lastSeenTime ? ` · ${lastSeenTime}` : ''}
+                      {elapsed ? ` · ${elapsed} after first check-in` : ''}
+                    </p>
+                  ) : (
+                    <p className="mt-2 text-sm text-amber-800">
+                      No confirmed Podo sightings found.
+                    </p>
+                  )}
+                </div>
+              </div>
+              <Link
+                to="/"
+                className="inline-flex rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-amber-800"
+              >
+                View Journey
+              </Link>
+            </div>
+          </section>
+
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             <div className={statCardStyles}>
               <p className="text-xs uppercase tracking-wide text-slate-500">Total records</p>
@@ -85,21 +115,6 @@ const Dashboard = () => {
                 {stats.recordsByType.sightings}
               </p>
             </div>
-          </div>
-
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
-            <p className="text-xs uppercase tracking-wide text-amber-700">Last Seen Podo</p>
-            {lastSeenPodo ? (
-              <>
-                <p className="mt-1 text-lg font-semibold text-amber-900">{lastSeenLocation}</p>
-                <p className="mt-1 text-sm text-amber-800">
-                  Seen with {lastSeenWith}
-                  {lastSeenTime ? ` at ${lastSeenTime}` : ''}
-                </p>
-              </>
-            ) : (
-              <p className="mt-1 text-sm text-amber-800">No confirmed Podo sightings found.</p>
-            )}
           </div>
         </>
       ) : null}
