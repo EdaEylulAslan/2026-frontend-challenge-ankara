@@ -4,6 +4,8 @@ import SearchBar from '../components/filters/SearchBar'
 import EmptyState from '../components/states/EmptyState'
 import ErrorState from '../components/states/ErrorState'
 import LoadingState from '../components/states/LoadingState'
+import { canonicalizePerson } from '../data/canonicalize'
+import { parsePeopleList } from '../data/normalize'
 import TimelineView from '../components/timeline/TimelineView'
 import type { FormType, InvestigationRecord } from '../data/types'
 import { useAllRecords } from '../hooks/useAllRecords'
@@ -28,12 +30,35 @@ const toSearchableText = (record: InvestigationRecord): string => {
   return values.join(' ').toLowerCase()
 }
 
+const includesPodo = (record: InvestigationRecord): boolean => {
+  const directNames = [
+    record.fields.personName,
+    record.fields.authorName,
+    record.fields.suspectName,
+  ].filter((value): value is string => typeof value === 'string')
+
+  const seenWith = parsePeopleList(
+    typeof record.fields.seenWith === 'string' ? record.fields.seenWith : undefined,
+  )
+  const mentionedPeople = parsePeopleList(
+    typeof record.fields.mentionedPeople === 'string' ? record.fields.mentionedPeople : undefined,
+  )
+
+  return [...directNames, ...seenWith, ...mentionedPeople].some(
+    (name) => canonicalizePerson(name) === 'podo',
+  )
+}
+
+type TimelineMode = 'journey' | 'all'
+
 const TimelinePage = () => {
   const { data, isLoading, isError, error, refetch } = useAllRecords()
   const [searchTerm, setSearchTerm] = useState('')
   const [formType, setFormType] = useState<FormType | 'all'>('all')
+  const [mode, setMode] = useState<TimelineMode>('journey')
 
   const records = data ?? []
+  const podoRecords = useMemo(() => records.filter(includesPodo), [records])
   const filteredRecords = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase()
 
@@ -52,6 +77,31 @@ const TimelinePage = () => {
       <p className="mt-2 text-sm text-slate-600">
         Chronological view of all submitted records across forms.
       </p>
+
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setMode('journey')}
+          className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+            mode === 'journey'
+              ? 'border-amber-600 bg-amber-600 text-white'
+              : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'
+          }`}
+        >
+          Podo&apos;s Journey ({podoRecords.length} events)
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode('all')}
+          className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+            mode === 'all'
+              ? 'border-slate-900 bg-slate-900 text-white'
+              : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'
+          }`}
+        >
+          All Records ({records.length} total)
+        </button>
+      </div>
 
       <div className="mt-4 space-y-3">
         <SearchBar value={searchTerm} onChange={setSearchTerm} />
