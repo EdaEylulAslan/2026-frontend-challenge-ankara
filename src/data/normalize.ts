@@ -40,6 +40,17 @@ const normalizeAnswerValue = (value: unknown): AnswerValue | undefined => {
 export const parseRecordTimestamp = (value: string): Date =>
   parse(value, 'dd-MM-yyyy HH:mm', new Date())
 
+export const parsePeopleList = (value: string | undefined): string[] => {
+  if (!value) {
+    return []
+  }
+
+  return value
+    .split(',')
+    .map((person) => person.trim())
+    .filter((person) => person.length > 0)
+}
+
 export const normalizeSubmission = (raw: RawSubmission): NormalizedSubmission => {
   const fields: Record<string, AnswerValue> = {}
   const answers = raw.answers ?? {}
