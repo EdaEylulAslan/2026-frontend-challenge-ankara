@@ -4,11 +4,14 @@ import SearchBar from '../components/filters/SearchBar'
 import EmptyState from '../components/states/EmptyState'
 import ErrorState from '../components/states/ErrorState'
 import LoadingState from '../components/states/LoadingState'
+import { includesPodo } from '../data/podo'
 import { canonicalizePerson } from '../data/canonicalize'
-import { parsePeopleList, parseRecordTimestamp } from '../data/normalize'
+import { parseRecordTimestamp } from '../data/normalize'
 import TimelineView from '../components/timeline/TimelineView'
 import type { FormType, InvestigationRecord } from '../data/types'
 import { useAllRecords } from '../hooks/useAllRecords'
+
+const EMPTY_RECORDS: InvestigationRecord[] = []
 
 const toSearchableText = (record: InvestigationRecord): string => {
   const values = Object.values(record.fields).flatMap((value) => {
@@ -28,25 +31,6 @@ const toSearchableText = (record: InvestigationRecord): string => {
   })
 
   return values.join(' ').toLowerCase()
-}
-
-const includesPodo = (record: InvestigationRecord): boolean => {
-  const directNames = [
-    record.fields.personName,
-    record.fields.authorName,
-    record.fields.suspectName,
-  ].filter((value): value is string => typeof value === 'string')
-
-  const seenWith = parsePeopleList(
-    typeof record.fields.seenWith === 'string' ? record.fields.seenWith : undefined,
-  )
-  const mentionedPeople = parsePeopleList(
-    typeof record.fields.mentionedPeople === 'string' ? record.fields.mentionedPeople : undefined,
-  )
-
-  return [...directNames, ...seenWith, ...mentionedPeople].some(
-    (name) => canonicalizePerson(name) === 'podo',
-  )
 }
 
 type TimelineMode = 'journey' | 'all'
@@ -90,7 +74,7 @@ const TimelinePage = () => {
   const [formType, setFormType] = useState<FormType | 'all'>('all')
   const [mode, setMode] = useState<TimelineMode>('journey')
 
-  const records = data ?? []
+  const records = data ?? EMPTY_RECORDS
   const podoRecords = useMemo(() => records.filter(includesPodo), [records])
   const lastSeenRecord = useMemo(
     () =>
