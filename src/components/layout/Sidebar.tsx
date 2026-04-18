@@ -1,4 +1,4 @@
-import { LayoutDashboard, MapPin, Route, Users } from 'lucide-react'
+import { LayoutDashboard, Map, MapPin, Route, Users } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 const links = [
@@ -6,6 +6,7 @@ const links = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/people', label: 'People', icon: Users },
   { to: '/locations', label: 'Locations', icon: MapPin },
+  { to: '/map', label: 'Map', icon: Map },
 ]
 
 const Sidebar = () => {

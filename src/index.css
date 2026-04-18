@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+/* Leaflet custom markers (react-leaflet divIcon) */
+.map-number-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.map-number-marker-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.map-last-seen-marker .map-number-marker-inner {
+  animation: map-last-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes map-last-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.45);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+  }
+}
