@@ -80,10 +80,11 @@ npm run build
   - "Last Seen Podo" hero card and "Persons of Interest" suspect ranking
   - secondary summary metrics
 - Map (`/map`):
-  - OpenStreetMap tiles centered on Ankara (zoom 13)
+  - OpenStreetMap tiles; view auto-fits the route or all location pins
   - markers for each coordinate cluster with popups and links to location detail
-  - optional Podo journey polyline (amber, dashed) with numbered stops
-  - last journey stop highlighted as "Last seen" (red, pulsing marker)
+  - optional Podo journey: thick route line + segment arrows for direction; numbered stops (green start, amber middle, red last seen)
+  - on-map tooltips and page legend explaining chronological order (1 → N)
+- Shell: collapsible sidebar on large screens (icon rail), responsive header
 - Route-level error boundary
 
 ## Architecture Decisions
