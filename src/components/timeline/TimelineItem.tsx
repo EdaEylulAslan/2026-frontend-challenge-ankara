@@ -51,13 +51,21 @@ const getNavigationTarget = (record: InvestigationRecord): string | undefined =>
     typeof record.fields.seenWith === 'string' ? record.fields.seenWith : undefined,
   )
 
-  const candidate = [...directCandidates, ...seenWithCandidates][0]
-  if (!candidate) {
+  const allCandidates = [...directCandidates, ...seenWithCandidates]
+  if (allCandidates.length === 0) {
     return undefined
   }
 
-  const canonical = canonicalizePerson(candidate)
-  return canonical.length > 0 ? canonical : undefined
+  const canonicalCandidates = allCandidates
+    .map((name) => canonicalizePerson(name))
+    .filter((name) => name.length > 0)
+
+  if (canonicalCandidates.length === 0) {
+    return undefined
+  }
+
+  const nonPodoCandidate = canonicalCandidates.find((name) => name !== 'podo')
+  return nonPodoCandidate ?? canonicalCandidates[0]
 }
 
 const TimelineItem = ({
