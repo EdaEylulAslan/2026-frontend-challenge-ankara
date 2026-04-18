@@ -1,7 +1,6 @@
 import { LayoutDashboard, Map, MapPin, PanelLeftClose, PanelLeftOpen, Route, Users } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
-
-const PODO_IMAGE_URL = 'https://cdn.jotfor.ms/assets/resources/podo/n_podo_2.png'
+import PodoAvatar from '../PodoAvatar'
 
 const links = [
   { to: '/', label: 'Timeline', icon: Route },
@@ -27,11 +26,7 @@ const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
         className={`flex items-center gap-2 border-b border-stone-200 p-4 ${collapsed ? 'lg:flex-col lg:items-stretch' : 'justify-between'}`}
       >
         <div className={`flex min-w-0 items-center gap-2 ${collapsed ? 'lg:justify-center' : ''}`}>
-          <img
-            src={PODO_IMAGE_URL}
-            alt="Podo"
-            className="h-8 w-8 rounded-full border border-amber-300 object-cover shadow-sm shadow-amber-500/30"
-          />
+          <PodoAvatar size="sm" alt="Podo" />
           <h1
             className={`min-w-0 font-serif text-2xl font-semibold text-slate-900 ${
               collapsed ? 'lg:sr-only' : ''
