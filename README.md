@@ -12,6 +12,7 @@ It aggregates submissions from five Jotform forms, normalizes inconsistent answe
 - Fuse.js (installed)
 - Lucide React
 - date-fns
+- Leaflet + react-leaflet (map view)
 
 ## Setup
 
@@ -76,8 +77,13 @@ npm run build
   - coordinate-based clustering
   - location detail with related records
 - Dashboard:
-  - summary metrics
-  - "Last Seen Podo" lead banner
+  - "Last Seen Podo" hero card and "Persons of Interest" suspect ranking
+  - secondary summary metrics
+- Map (`/map`):
+  - OpenStreetMap tiles centered on Ankara (zoom 13)
+  - markers for each coordinate cluster with popups and links to location detail
+  - optional Podo journey polyline (amber, dashed) with numbered stops
+  - last journey stop highlighted as "Last seen" (red, pulsing marker)
 - Route-level error boundary
 
 ## Architecture Decisions
@@ -125,7 +131,7 @@ This reduces obvious duplicates (`Kagan`, `Kagan A.`, `Kagan`) before relation b
 
 - Prioritized core investigation flows (timeline/people/locations/dashboard) over deeper visual polish
 - Implemented pragmatic canonicalization and relation indexing first
-- Deferred richer evidence graph/map rendering for faster delivery
+- Deferred richer evidence graph rendering for faster delivery
 - Used route-level boundary and reusable UI states instead of broad custom state framework
 
 ## Known Limitations
@@ -138,7 +144,6 @@ This reduces obvious duplicates (`Kagan`, `Kagan A.`, `Kagan`) before relation b
 ## Future Improvements
 
 - Introduce weighted Fuse.js matching with explicit confidence score per person merge
-- Add map view for location clusters and movement trail
 - Add cross-record graph (person <-> person, person <-> location)
 - Add unit tests for normalization/canonicalization/relation selectors
 - Move Jotform API calls to backend proxy to protect keys and reduce client constraints
