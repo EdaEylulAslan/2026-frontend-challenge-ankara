@@ -1,5 +1,6 @@
 import { format } from 'date-fns'
 import { MapPin } from 'lucide-react'
+import PodoAvatar from '../PodoAvatar'
 import RecordTypeBadge from '../records/RecordTypeBadge'
 import SubjectBadge from '../records/SubjectBadge'
 import { canonicalizePerson } from '../../data/canonicalize'
@@ -147,7 +148,12 @@ const RecordCard = ({ record, onPersonClick, className }: RecordCardProps) => {
             return <span key={`${segment.text}-${index}`}>{segment.text}</span>
           })}
         </h3>
-        {isSubjectRecord ? <SubjectBadge /> : null}
+        {isSubjectRecord ? (
+          <span className="inline-flex items-center gap-1.5">
+            <PodoAvatar size="sm" alt="Podo in event" />
+            <SubjectBadge />
+          </span>
+        ) : null}
       </div>
       <p className="mt-1 text-sm text-slate-700">{getPrimaryText(record)}</p>
     </article>
