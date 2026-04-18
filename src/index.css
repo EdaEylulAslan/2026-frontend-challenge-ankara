@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@theme {
+  --font-serif: "Playfair Display", serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
 /* Leaflet custom markers (react-leaflet divIcon) */
 .map-number-marker {
   background: transparent !important;
