@@ -7,6 +7,14 @@
 
 ---
 
+## The Case
+
+Podo, a cat, appeared at an event at CerModern in Ankara on the night of April 18, 2026. Over the next two hours she was seen moving across the city — Tunalı Hilmi, Kuğulu Park, Seğmenler Parkı, Atakule — with different people. Her last confirmed sighting was at **Ankara Kalesi at 21:11 with Kağan**. She has not been seen since.
+
+This dashboard stitches together scattered records from five Jotform sources (Check-ins, Messages, Sightings, Personal Notes, Anonymous Tips) to help an investigator trace Podo's last known hours and identify who looks most suspicious.
+
+**Suspect #1, based on evidence in the data, is Kağan** — last seen with Podo, seen alone in Hamamönü afterwards, preparing an alibi with Eray via message, and the target of high-confidence anonymous tips.
+
 Podo Investigation Board is a frontend investigation UI built for the Jotform Frontend Hackathon scenario "Podo'nun Kaybi".  
 It aggregates submissions from five Jotform forms, normalizes inconsistent answer structures, and helps investigators inspect timeline, people, and location relationships in one place.
 
