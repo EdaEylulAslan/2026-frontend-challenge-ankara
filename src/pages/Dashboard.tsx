@@ -14,7 +14,7 @@ import { useAllRecords } from '../hooks/useAllRecords'
 import { useLocations } from '../hooks/useLocations'
 import { usePeople } from '../hooks/usePeople'
 
-const statCardStyles = 'rounded-xl border border-slate-200 bg-white p-4 shadow-sm'
+const statCardStyles = 'rounded-lg border border-slate-200 bg-slate-50 p-3'
 const rankBadgeStyles = ['bg-rose-600', 'bg-orange-500', 'bg-amber-500']
 
 const Dashboard = () => {
@@ -138,22 +138,22 @@ const Dashboard = () => {
             </div>
           </section>
 
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
             <div className={statCardStyles}>
-              <p className="text-xs uppercase tracking-wide text-slate-500">Total records</p>
-              <p className="mt-1 text-2xl font-semibold text-slate-900">{stats.totalRecords}</p>
+              <p className="text-[11px] uppercase tracking-wide text-slate-500">Total records</p>
+              <p className="mt-1 text-lg font-semibold text-slate-900">{stats.totalRecords}</p>
             </div>
             <div className={statCardStyles}>
-              <p className="text-xs uppercase tracking-wide text-slate-500">People entities</p>
-              <p className="mt-1 text-2xl font-semibold text-slate-900">{stats.peopleCount}</p>
+              <p className="text-[11px] uppercase tracking-wide text-slate-500">People entities</p>
+              <p className="mt-1 text-lg font-semibold text-slate-900">{stats.peopleCount}</p>
             </div>
             <div className={statCardStyles}>
-              <p className="text-xs uppercase tracking-wide text-slate-500">Locations</p>
-              <p className="mt-1 text-2xl font-semibold text-slate-900">{stats.locationCount}</p>
+              <p className="text-[11px] uppercase tracking-wide text-slate-500">Locations</p>
+              <p className="mt-1 text-lg font-semibold text-slate-900">{stats.locationCount}</p>
             </div>
             <div className={statCardStyles}>
-              <p className="text-xs uppercase tracking-wide text-slate-500">Sightings</p>
-              <p className="mt-1 text-2xl font-semibold text-slate-900">
+              <p className="text-[11px] uppercase tracking-wide text-slate-500">Sightings</p>
+              <p className="mt-1 text-lg font-semibold text-slate-900">
                 {stats.recordsByType.sightings}
               </p>
             </div>
