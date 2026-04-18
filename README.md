@@ -1,5 +1,12 @@
 # Podo Investigation Board
 
+**Candidate:** Eda Eylül Aslan  
+**Assessment:** Jotform Frontend Hackathon — "Missing Podo: The Ankara Case"  
+**Submission Date:** April 18, 2026  
+**Live Run:** `npm install && npm run dev`
+
+---
+
 Podo Investigation Board is a frontend investigation UI built for the Jotform Frontend Hackathon scenario "Podo'nun Kaybi".  
 It aggregates submissions from five Jotform forms, normalizes inconsistent answer structures, and helps investigators inspect timeline, people, and location relationships in one place.
 
@@ -76,14 +83,17 @@ npm run build
 - Locations page:
   - coordinate-based clustering
   - location detail with related records
-- Dashboard:
-  - "Last Seen Podo" hero card and "Persons of Interest" suspect ranking
-  - secondary summary metrics
+- Dashboard (`/dashboard`):
+  - case-file style hero ("Last sighting", ranked suspects, recent activity strip, metrics)
+- Timeline (`/`):
+  - Podo's Journey vs All Records; form filters; evidence numbering on cards
+  - journey pool includes records where Podo appears (incl. Messages `senderName` / `recipientName`)
 - Map (`/map`):
-  - OpenStreetMap tiles; view auto-fits the route or all location pins
+  - **Carto Positron** light basemap (OSM data via Carto); view auto-fits the route or all location pins
   - markers for each coordinate cluster with popups and links to location detail
-  - optional Podo journey: thick route line + segment arrows for direction; numbered stops (green start, amber middle, red last seen)
-  - on-map tooltips and page legend explaining chronological order (1 → N)
+  - optional Podo journey: route polyline + segment arrows; numbered stops (green start, amber middle, last stop with Podo portrait + stop number)
+  - off-route pins use a neutral dot (not the default blue Leaflet marker) when "Show Podo's route" is on
+  - on-map tooltips and page legend (chronological order 1 → N)
 - Shell: collapsible sidebar on large screens (icon rail), responsive header
 - Route-level error boundary
 
@@ -130,10 +140,10 @@ This reduces obvious duplicates (`Kagan`, `Kagan A.`, `Kagan`) before relation b
 
 ## Trade-offs Under Time Pressure
 
-- Prioritized core investigation flows (timeline/people/locations/dashboard) over deeper visual polish
 - Implemented pragmatic canonicalization and relation indexing first
 - Deferred richer evidence graph rendering for faster delivery
 - Used route-level boundary and reusable UI states instead of broad custom state framework
+- UI follows an “investigation board” art direction (paper/stone, serif headings, mono case labels); map/readme updated as features land
 
 ## Known Limitations
 
