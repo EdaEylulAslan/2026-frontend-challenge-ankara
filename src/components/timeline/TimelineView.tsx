@@ -7,6 +7,7 @@ interface TimelineViewProps {
   lastSeenRecordId?: string
   showDisappearanceSeparatorAfterId?: string
   mutedRecordIds?: Set<string>
+  highlightedRecordIds?: Set<string>
 }
 
 const getTimestamp = (record: InvestigationRecord): number => {
@@ -26,6 +27,7 @@ const TimelineView = ({
   lastSeenRecordId,
   showDisappearanceSeparatorAfterId,
   mutedRecordIds,
+  highlightedRecordIds,
 }: TimelineViewProps) => {
   const sorted = [...records].sort((a, b) => getTimestamp(a) - getTimestamp(b))
 
@@ -51,6 +53,7 @@ const TimelineView = ({
           isLastSeen={record.id === lastSeenRecordId}
           showDisappearanceSeparator={record.id === showDisappearanceSeparatorAfterId}
           isMuted={mutedRecordIds?.has(record.id) ?? false}
+          isHighlighted={highlightedRecordIds?.has(record.id) ?? false}
         />
       ))}
     </div>

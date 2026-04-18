@@ -23,6 +23,7 @@ interface TimelineItemProps {
   isLastSeen: boolean
   showDisappearanceSeparator: boolean
   isMuted: boolean
+  isHighlighted: boolean
 }
 
 const getParsedTimestamp = (record: InvestigationRecord): Date | undefined => {
@@ -68,6 +69,7 @@ const TimelineItem = ({
   isLastSeen,
   showDisappearanceSeparator,
   isMuted,
+  isHighlighted,
 }: TimelineItemProps) => {
   const navigate = useNavigate()
   const parsed = getParsedTimestamp(record)
@@ -109,7 +111,9 @@ const TimelineItem = ({
           }}
           className={`${navigationTarget ? 'cursor-pointer transition hover:shadow-md' : ''} ${
             isLastSeen ? 'border-l-4 border-l-amber-500 bg-amber-50/40 p-5' : ''
-          } ${isMuted ? 'opacity-80' : ''}`}
+          } ${isMuted ? 'opacity-80' : ''} ${
+            isHighlighted ? 'border border-rose-200 bg-rose-50/40' : ''
+          }`}
         />
         {showDisappearanceSeparator ? (
           <p className="mt-3 text-center text-xs text-slate-500">

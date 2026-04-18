@@ -60,6 +60,30 @@ const toTimestamp = (record: InvestigationRecord): number => {
   return Number.isNaN(parsed.getTime()) ? 0 : parsed.getTime()
 }
 
+const isSuspiciousAfterDisappearance = (
+  record: InvestigationRecord,
+  cutoff: number,
+): boolean => {
+  if (toTimestamp(record) <= cutoff) {
+    return false
+  }
+
+  const personName =
+    typeof record.fields.personName === 'string' ? canonicalizePerson(record.fields.personName) : ''
+  const seenWith =
+    typeof record.fields.seenWith === 'string' ? canonicalizePerson(record.fields.seenWith) : ''
+  const suspectName =
+    typeof record.fields.suspectName === 'string'
+      ? canonicalizePerson(record.fields.suspectName)
+      : ''
+
+  const isKaganSoloSighting =
+    record.formType === 'sightings' && personName === 'kagan' && (seenWith === 'unknown' || !seenWith)
+  const isKaganTip = record.formType === 'tips' && suspectName === 'kagan'
+
+  return isKaganSoloSighting || isKaganTip
+}
+
 const TimelinePage = () => {
   const { data, isLoading, isError, error, refetch } = useAllRecords()
   const [searchTerm, setSearchTerm] = useState('')
@@ -105,6 +129,18 @@ const TimelinePage = () => {
       (record) => toTimestamp(record) > cutoff && !includesPodo(record),
     )
   }, [filteredRecords, lastSeenRecord, mode])
+  const highlightedSuspiciousIds = useMemo(() => {
+    if (mode !== 'all' || !lastSeenRecord) {
+      return new Set<string>()
+    }
+
+    const cutoff = toTimestamp(lastSeenRecord)
+    return new Set(
+      postDisappearanceRecords
+        .filter((record) => isSuspiciousAfterDisappearance(record, cutoff))
+        .map((record) => record.id),
+    )
+  }, [lastSeenRecord, mode, postDisappearanceRecords])
 
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -173,6 +209,7 @@ const TimelinePage = () => {
                   <TimelineView
                     records={postDisappearanceRecords}
                     mutedRecordIds={new Set(postDisappearanceRecords.map((record) => record.id))}
+                    highlightedRecordIds={highlightedSuspiciousIds}
                   />
                 </div>
               </section>
