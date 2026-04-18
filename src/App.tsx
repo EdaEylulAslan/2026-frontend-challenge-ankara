@@ -1,42 +1,25 @@
-import { useEffect } from 'react'
-import { getSubmissions } from './api/jotform'
-import { normalizeSubmission } from './data/normalize'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import AppShell from './components/layout/AppShell'
+import Dashboard from './pages/Dashboard'
+import LocationDetailPage from './pages/LocationDetailPage'
+import LocationsPage from './pages/LocationsPage'
+import PeoplePage from './pages/PeoplePage'
+import PersonDetailPage from './pages/PersonDetailPage'
+import TimelinePage from './pages/TimelinePage'
 
 function App() {
-  useEffect(() => {
-    const checkinsFormId = import.meta.env.VITE_FORM_CHECKINS
-
-    if (!checkinsFormId) {
-      console.error('Missing VITE_FORM_CHECKINS')
-      return
-    }
-
-    const run = async (): Promise<void> => {
-      try {
-        const submissions = await getSubmissions(checkinsFormId)
-        const normalized = submissions.map(normalizeSubmission)
-        console.log('Checkins submissions (raw):', submissions)
-        console.log('Checkins submissions (normalized):', normalized)
-      } catch (error) {
-        console.error('Failed to fetch checkins submissions:', error)
-      }
-    }
-
-    void run()
-  }, [])
-
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-16 text-slate-100">
-      <div className="mx-auto w-full max-w-6xl">
-        <h1 className="font-serif text-4xl font-semibold tracking-tight">
-          Podo Investigation Board
-        </h1>
-        <p className="mt-3 max-w-2xl text-sm text-slate-300">
-          Frontend bootstrapped with React, TypeScript, TanStack Query, Router,
-          and Tailwind.
-        </p>
-      </div>
-    </main>
+    <AppShell>
+      <Routes>
+        <Route path="/" element={<TimelinePage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/people" element={<PeoplePage />} />
+        <Route path="/people/:canonicalName" element={<PersonDetailPage />} />
+        <Route path="/locations" element={<LocationsPage />} />
+        <Route path="/locations/:coords" element={<LocationDetailPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AppShell>
   )
 }
 
