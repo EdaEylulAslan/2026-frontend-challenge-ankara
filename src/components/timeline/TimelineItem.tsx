@@ -20,6 +20,9 @@ interface TimelineItemProps {
   isLast: boolean
   topConnector: 'solid' | 'dashed'
   bottomConnector: 'solid' | 'dashed'
+  isLastSeen: boolean
+  showDisappearanceSeparator: boolean
+  isMuted: boolean
 }
 
 const getParsedTimestamp = (record: InvestigationRecord): Date | undefined => {
@@ -62,6 +65,9 @@ const TimelineItem = ({
   isLast,
   topConnector,
   bottomConnector,
+  isLastSeen,
+  showDisappearanceSeparator,
+  isMuted,
 }: TimelineItemProps) => {
   const navigate = useNavigate()
   const parsed = getParsedTimestamp(record)
@@ -88,15 +94,29 @@ const TimelineItem = ({
         ) : null}
       </div>
 
-      <RecordCard
-        record={record}
-        onClick={() => {
-          if (navigationTarget) {
-            navigate(`/people/${encodeURIComponent(navigationTarget)}`)
-          }
-        }}
-        className={navigationTarget ? 'cursor-pointer transition hover:shadow-md' : ''}
-      />
+      <div className="min-w-0">
+        {isLastSeen ? (
+          <p className="mb-2 inline-flex rounded-full border border-amber-300 bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
+            ⚠️ LAST CONFIRMED SIGHTING
+          </p>
+        ) : null}
+        <RecordCard
+          record={record}
+          onClick={() => {
+            if (navigationTarget) {
+              navigate(`/people/${encodeURIComponent(navigationTarget)}`)
+            }
+          }}
+          className={`${navigationTarget ? 'cursor-pointer transition hover:shadow-md' : ''} ${
+            isLastSeen ? 'border-l-4 border-l-amber-500 bg-amber-50/40 p-5' : ''
+          } ${isMuted ? 'opacity-80' : ''}`}
+        />
+        {showDisappearanceSeparator ? (
+          <p className="mt-3 text-center text-xs text-slate-500">
+            —— Podo disappears after this point ——
+          </p>
+        ) : null}
+      </div>
     </article>
   )
 }

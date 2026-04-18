@@ -5,7 +5,7 @@ import EmptyState from '../components/states/EmptyState'
 import ErrorState from '../components/states/ErrorState'
 import LoadingState from '../components/states/LoadingState'
 import { canonicalizePerson } from '../data/canonicalize'
-import { parsePeopleList } from '../data/normalize'
+import { parsePeopleList, parseRecordTimestamp } from '../data/normalize'
 import TimelineView from '../components/timeline/TimelineView'
 import type { FormType, InvestigationRecord } from '../data/types'
 import { useAllRecords } from '../hooks/useAllRecords'
@@ -51,6 +51,15 @@ const includesPodo = (record: InvestigationRecord): boolean => {
 
 type TimelineMode = 'journey' | 'all'
 
+const toTimestamp = (record: InvestigationRecord): number => {
+  if (typeof record.fields.timestamp !== 'string') {
+    return 0
+  }
+
+  const parsed = parseRecordTimestamp(record.fields.timestamp)
+  return Number.isNaN(parsed.getTime()) ? 0 : parsed.getTime()
+}
+
 const TimelinePage = () => {
   const { data, isLoading, isError, error, refetch } = useAllRecords()
   const [searchTerm, setSearchTerm] = useState('')
@@ -59,6 +68,11 @@ const TimelinePage = () => {
 
   const records = data ?? []
   const podoRecords = useMemo(() => records.filter(includesPodo), [records])
+  const lastSeenRecord = useMemo(
+    () =>
+      [...podoRecords].sort((a, b) => toTimestamp(b) - toTimestamp(a))[0],
+    [podoRecords],
+  )
   const filteredRecords = useMemo(() => {
     const sourceRecords = mode === 'journey' ? podoRecords : records
     const normalizedSearch = searchTerm.trim().toLowerCase()
@@ -71,6 +85,26 @@ const TimelinePage = () => {
       return matchesForm && matchesSearch
     })
   }, [formType, mode, podoRecords, records, searchTerm])
+
+  const preDisappearanceRecords = useMemo(() => {
+    if (mode !== 'all' || !lastSeenRecord) {
+      return filteredRecords
+    }
+
+    const cutoff = toTimestamp(lastSeenRecord)
+    return filteredRecords.filter((record) => toTimestamp(record) <= cutoff)
+  }, [filteredRecords, lastSeenRecord, mode])
+
+  const postDisappearanceRecords = useMemo(() => {
+    if (mode !== 'all' || !lastSeenRecord) {
+      return []
+    }
+
+    const cutoff = toTimestamp(lastSeenRecord)
+    return filteredRecords.filter(
+      (record) => toTimestamp(record) > cutoff && !includesPodo(record),
+    )
+  }, [filteredRecords, lastSeenRecord, mode])
 
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -121,7 +155,29 @@ const TimelinePage = () => {
           <EmptyState message="No records match your filters." />
         ) : null}
         {!isLoading && !isError && filteredRecords.length > 0 ? (
-          <TimelineView records={filteredRecords} />
+          <>
+            <TimelineView
+              records={preDisappearanceRecords}
+              lastSeenRecordId={lastSeenRecord?.id}
+              showDisappearanceSeparatorAfterId={lastSeenRecord?.id}
+            />
+            {mode === 'all' && postDisappearanceRecords.length > 0 ? (
+              <section className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <h3 className="text-sm font-semibold text-slate-800">
+                  🕵️ Activity after Podo&apos;s disappearance
+                </h3>
+                <p className="mt-1 text-xs text-slate-600">
+                  Events reported after the last confirmed sighting.
+                </p>
+                <div className="mt-3">
+                  <TimelineView
+                    records={postDisappearanceRecords}
+                    mutedRecordIds={new Set(postDisappearanceRecords.map((record) => record.id))}
+                  />
+                </div>
+              </section>
+            ) : null}
+          </>
         ) : null}
       </div>
     </section>

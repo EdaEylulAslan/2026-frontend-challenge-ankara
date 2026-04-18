@@ -4,6 +4,9 @@ import TimelineItem from './TimelineItem'
 
 interface TimelineViewProps {
   records: InvestigationRecord[]
+  lastSeenRecordId?: string
+  showDisappearanceSeparatorAfterId?: string
+  mutedRecordIds?: Set<string>
 }
 
 const getTimestamp = (record: InvestigationRecord): number => {
@@ -18,7 +21,12 @@ const getTimestamp = (record: InvestigationRecord): number => {
 
 const DASHED_GAP_MS = 30 * 60 * 1000
 
-const TimelineView = ({ records }: TimelineViewProps) => {
+const TimelineView = ({
+  records,
+  lastSeenRecordId,
+  showDisappearanceSeparatorAfterId,
+  mutedRecordIds,
+}: TimelineViewProps) => {
   const sorted = [...records].sort((a, b) => getTimestamp(a) - getTimestamp(b))
 
   return (
@@ -40,6 +48,9 @@ const TimelineView = ({ records }: TimelineViewProps) => {
               ? 'dashed'
               : 'solid'
           }
+          isLastSeen={record.id === lastSeenRecordId}
+          showDisappearanceSeparator={record.id === showDisappearanceSeparatorAfterId}
+          isMuted={mutedRecordIds?.has(record.id) ?? false}
         />
       ))}
     </div>
