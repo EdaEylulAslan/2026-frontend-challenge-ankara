@@ -1,12 +1,22 @@
 import { format } from 'date-fns'
 import RecordCard from '../cards/RecordCard'
 import { parseRecordTimestamp } from '../../data/normalize'
-import type { InvestigationRecord } from '../../data/types'
+import type { FormType, InvestigationRecord } from '../../data/types'
+
+const dotColors: Record<FormType, string> = {
+  checkins: 'bg-blue-500',
+  messages: 'bg-emerald-500',
+  sightings: 'bg-amber-500',
+  notes: 'bg-violet-500',
+  tips: 'bg-rose-500',
+}
 
 interface TimelineItemProps {
   record: InvestigationRecord
   isFirst: boolean
   isLast: boolean
+  topConnector: 'solid' | 'dashed'
+  bottomConnector: 'solid' | 'dashed'
 }
 
 const getParsedTimestamp = (record: InvestigationRecord): Date | undefined => {
@@ -20,7 +30,16 @@ const getParsedTimestamp = (record: InvestigationRecord): Date | undefined => {
   return Number.isNaN(parsed.getTime()) ? undefined : parsed
 }
 
-const TimelineItem = ({ record, isFirst, isLast }: TimelineItemProps) => {
+const connectorClass = (style: 'solid' | 'dashed'): string =>
+  style === 'dashed' ? 'border-l border-dashed border-slate-300' : 'border-l border-slate-300'
+
+const TimelineItem = ({
+  record,
+  isFirst,
+  isLast,
+  topConnector,
+  bottomConnector,
+}: TimelineItemProps) => {
   const parsed = getParsedTimestamp(record)
   const timeLabel = parsed ? format(parsed, 'HH:mm') : '--:--'
   const dateLabel = parsed ? format(parsed, 'dd MMM') : 'Unknown date'
@@ -33,10 +52,14 @@ const TimelineItem = ({ record, isFirst, isLast }: TimelineItemProps) => {
       </div>
 
       <div className="relative flex justify-center">
-        {!isFirst ? <span className="absolute top-0 h-1/2 w-px bg-slate-300" /> : null}
-        <span className="mt-2 h-3 w-3 rounded-full bg-slate-500" />
+        {!isFirst ? (
+          <span className={`absolute top-0 h-1/2 w-px ${connectorClass(topConnector)}`} />
+        ) : null}
+        <span className={`mt-2 h-3 w-3 rounded-full ${dotColors[record.formType]}`} />
         {!isLast ? (
-          <span className="absolute bottom-0 top-[18px] w-px border-l border-slate-300" />
+          <span
+            className={`absolute bottom-0 top-[18px] w-px ${connectorClass(bottomConnector)}`}
+          />
         ) : null}
       </div>
 

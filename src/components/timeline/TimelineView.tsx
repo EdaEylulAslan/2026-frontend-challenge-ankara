@@ -16,6 +16,8 @@ const getTimestamp = (record: InvestigationRecord): number => {
   return Number.isNaN(parsed.getTime()) ? 0 : parsed.getTime()
 }
 
+const DASHED_GAP_MS = 30 * 60 * 1000
+
 const TimelineView = ({ records }: TimelineViewProps) => {
   const sorted = [...records].sort((a, b) => getTimestamp(a) - getTimestamp(b))
 
@@ -27,6 +29,17 @@ const TimelineView = ({ records }: TimelineViewProps) => {
           record={record}
           isFirst={index === 0}
           isLast={index === sorted.length - 1}
+          topConnector={
+            index > 0 && getTimestamp(record) - getTimestamp(sorted[index - 1]) > DASHED_GAP_MS
+              ? 'dashed'
+              : 'solid'
+          }
+          bottomConnector={
+            index < sorted.length - 1 &&
+            getTimestamp(sorted[index + 1]) - getTimestamp(record) > DASHED_GAP_MS
+              ? 'dashed'
+              : 'solid'
+          }
         />
       ))}
     </div>
