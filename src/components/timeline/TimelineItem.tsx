@@ -23,6 +23,8 @@ interface TimelineItemProps {
   showDisappearanceSeparator: boolean
   isMuted: boolean
   isHighlighted: boolean
+  evidenceIndex?: number
+  staggerDelayMs?: number
 }
 
 const getParsedTimestamp = (record: InvestigationRecord): Date | undefined => {
@@ -37,7 +39,9 @@ const getParsedTimestamp = (record: InvestigationRecord): Date | undefined => {
 }
 
 const connectorClass = (style: 'solid' | 'dashed'): string =>
-  style === 'dashed' ? 'border-l border-dashed border-slate-300' : 'border-l border-slate-300'
+  style === 'dashed'
+    ? 'border-l-2 border-dashed border-amber-800/25'
+    : 'border-l-2 border-amber-800/30'
 
 const TimelineItem = ({
   record,
@@ -49,6 +53,8 @@ const TimelineItem = ({
   showDisappearanceSeparator,
   isMuted,
   isHighlighted,
+  evidenceIndex,
+  staggerDelayMs = 0,
 }: TimelineItemProps) => {
   const navigate = useNavigate()
   const parsed = getParsedTimestamp(record)
@@ -56,46 +62,70 @@ const TimelineItem = ({
   const dateLabel = parsed ? format(parsed, 'dd MMM') : 'Unknown date'
 
   return (
-    <article className="grid grid-cols-[84px_32px_minmax(0,1fr)] gap-3">
+    <article
+      className="timeline-item-enter grid grid-cols-[88px_36px_minmax(0,1fr)] gap-3"
+      style={{ animationDelay: `${staggerDelayMs}ms` }}
+    >
       <div className="pt-2 text-right">
-        <p className="text-xl font-semibold leading-none text-slate-500">{timeLabel}</p>
-        <p className="mt-1 text-xs text-slate-400">{dateLabel}</p>
+        <p className="font-mono text-xl font-semibold leading-none tracking-tight text-amber-900">
+          {timeLabel}
+        </p>
+        <p className="mt-1 font-serif text-xs italic text-slate-500">{dateLabel}</p>
       </div>
 
       <div className="relative flex justify-center">
         {!isFirst ? (
           <span className={`absolute top-0 h-1/2 w-px ${connectorClass(topConnector)}`} />
         ) : null}
-        <span className={`mt-2 h-3 w-3 rounded-full ${dotColors[record.formType]}`} />
+        <span
+          className={`z-[1] mt-1.5 h-3.5 w-3.5 rounded-full ring-2 ring-white ${dotColors[record.formType]} shadow-sm`}
+        />
         {!isLast ? (
           <span
-            className={`absolute bottom-0 top-[18px] w-px ${connectorClass(bottomConnector)}`}
+            className={`absolute bottom-0 top-[20px] w-px ${connectorClass(bottomConnector)}`}
           />
         ) : null}
       </div>
 
       <div className="min-w-0">
         {isLastSeen ? (
-          <p className="mb-2 inline-flex rounded-full border border-amber-300 bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
-            ⚠️ LAST CONFIRMED SIGHTING
-          </p>
+          <div className="mb-2 inline-flex animate-pulse rounded-lg border border-amber-400 bg-gradient-to-r from-amber-100 to-amber-50 px-3 py-1.5 shadow-sm shadow-amber-900/10">
+            <p className="font-serif text-xs font-semibold uppercase tracking-wide text-amber-950">
+              Last confirmed sighting
+            </p>
+          </div>
         ) : null}
         <RecordCard
           record={record}
+          evidenceIndex={evidenceIndex}
+          leftBorderClassName={isLastSeen ? 'border-l-amber-600' : undefined}
           onPersonClick={(name) => {
             const canonical = canonicalizePerson(name)
             if (canonical.length > 0) {
               navigate(`/people/${encodeURIComponent(canonical)}`)
             }
           }}
-          className={`${isLastSeen ? 'border-l-4 border-l-amber-500 bg-amber-50/40 p-5' : ''} ${
-            isMuted ? 'opacity-80' : ''
-          } ${isHighlighted ? 'border border-rose-200 bg-rose-50/40' : ''}`}
+          className={`${
+            isLastSeen ? 'border-l-amber-600 bg-amber-50/50 p-5 shadow-sm' : ''
+          } ${isMuted ? 'opacity-80' : ''} ${
+            isHighlighted ? 'border border-rose-300 bg-rose-50/50 ring-1 ring-rose-200/60' : ''
+          }`}
         />
         {showDisappearanceSeparator ? (
-          <p className="mt-3 text-center text-xs text-slate-500">
-            —— Podo disappears after this point ——
-          </p>
+          <div
+            className="mt-5 flex items-center gap-3 text-slate-500"
+            role="separator"
+            aria-label="Cold trail: no further Podo sightings"
+          >
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-400/70 to-slate-500/90" />
+            <span className="max-w-[14rem] text-center font-serif text-xs italic leading-snug text-rose-950/85">
+              Cold trail — no Podo signal beyond this line
+            </span>
+            <span className="font-mono text-lg font-light text-rose-800/70" aria-hidden>
+              ×
+            </span>
+            <span className="h-px flex-1 bg-gradient-to-l from-transparent via-slate-400/70 to-slate-500/90" />
+          </div>
         ) : null}
       </div>
     </article>

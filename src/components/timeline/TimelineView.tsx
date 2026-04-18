@@ -8,6 +8,8 @@ interface TimelineViewProps {
   showDisappearanceSeparatorAfterId?: string
   mutedRecordIds?: Set<string>
   highlightedRecordIds?: Set<string>
+  evidenceIndexByRecordId?: Map<string, number>
+  staggerAnimation?: boolean
 }
 
 const getTimestamp = (record: InvestigationRecord): number => {
@@ -28,6 +30,8 @@ const TimelineView = ({
   showDisappearanceSeparatorAfterId,
   mutedRecordIds,
   highlightedRecordIds,
+  evidenceIndexByRecordId,
+  staggerAnimation = true,
 }: TimelineViewProps) => {
   const sorted = [...records].sort((a, b) => getTimestamp(a) - getTimestamp(b))
 
@@ -54,6 +58,8 @@ const TimelineView = ({
           showDisappearanceSeparator={record.id === showDisappearanceSeparatorAfterId}
           isMuted={mutedRecordIds?.has(record.id) ?? false}
           isHighlighted={highlightedRecordIds?.has(record.id) ?? false}
+          evidenceIndex={evidenceIndexByRecordId?.get(record.id)}
+          staggerDelayMs={staggerAnimation ? index * 42 : 0}
         />
       ))}
     </div>

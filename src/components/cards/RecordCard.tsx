@@ -5,12 +5,23 @@ import RecordTypeBadge from '../records/RecordTypeBadge'
 import SubjectBadge from '../records/SubjectBadge'
 import { canonicalizePerson } from '../../data/canonicalize'
 import { parsePeopleList, parseRecordTimestamp } from '../../data/normalize'
-import type { InvestigationRecord } from '../../data/types'
+import type { FormType, InvestigationRecord } from '../../data/types'
 
 interface RecordCardProps {
   record: InvestigationRecord
   onPersonClick?: (name: string) => void
   className?: string
+  evidenceIndex?: number
+  /** Overrides the default form-type left border when set (e.g. last-seen highlight). */
+  leftBorderClassName?: string
+}
+
+const formTypeLeftBorder: Record<FormType, string> = {
+  checkins: 'border-l-blue-500',
+  messages: 'border-l-emerald-500',
+  sightings: 'border-l-amber-500',
+  notes: 'border-l-violet-500',
+  tips: 'border-l-rose-500',
 }
 
 const getPrimaryText = (record: InvestigationRecord): string => {
@@ -104,7 +115,13 @@ const getDisplayTime = (record: InvestigationRecord): string => {
   return format(parsed, 'dd MMM yyyy, HH:mm')
 }
 
-const RecordCard = ({ record, onPersonClick, className }: RecordCardProps) => {
+const RecordCard = ({
+  record,
+  onPersonClick,
+  className,
+  evidenceIndex,
+  leftBorderClassName,
+}: RecordCardProps) => {
   const location =
     typeof record.fields.location === 'string' ? record.fields.location : 'Unknown location'
   const relationship = getRelationshipMeta(record)
@@ -114,17 +131,28 @@ const RecordCard = ({ record, onPersonClick, className }: RecordCardProps) => {
       canonicalizePerson(segment.clickableName) === 'podo',
   )
 
+  const leftBorder = leftBorderClassName ?? formTypeLeftBorder[record.formType]
+
   return (
-    <article className={`case-card p-4 ${className ?? ''}`}>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <RecordTypeBadge formType={record.formType} />
-          <span className="inline-flex items-center gap-1 text-xs text-slate-600">
-            <MapPin size={12} />
-            {location}
-          </span>
+    <article
+      className={`case-card border-l-4 p-4 ${leftBorder} ${className ?? ''}`}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <RecordTypeBadge formType={record.formType} />
+            <span className="inline-flex items-center gap-1 text-xs text-slate-600">
+              <MapPin size={12} />
+              {location}
+            </span>
+          </div>
+          {typeof evidenceIndex === 'number' ? (
+            <p className="mt-2 font-mono text-[11px] font-medium uppercase tracking-wider text-amber-900/90">
+              Evidence #{String(evidenceIndex).padStart(3, '0')}
+            </p>
+          ) : null}
         </div>
-        <span className="text-xs text-slate-500">{getDisplayTime(record)}</span>
+        <span className="shrink-0 text-xs text-slate-500">{getDisplayTime(record)}</span>
       </div>
       <div className="mt-3 flex items-center gap-2">
         <h3 className="text-sm font-semibold text-slate-900">

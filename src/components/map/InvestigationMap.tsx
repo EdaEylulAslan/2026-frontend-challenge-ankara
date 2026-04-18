@@ -17,19 +17,29 @@ import { bearingBetween, midpoint } from '../../utils/geo'
 import MapViewController from './MapViewController'
 
 const ANKARA_CENTER: [number, number] = [39.9334, 32.8597]
-const OSM_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+/** Carto Positron — light, readable streets (replaces dark_all). */
+const CARTO_ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+const CARTO_POSITRON_TILES =
+  'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
 
 type JourneyMarkerVariant = 'single' | 'start' | 'waypoint' | 'last'
+
+/** Stops on Podo's route (last/single) — badge sits *below* the portrait so it never covers the face. */
+const LAST_SEEN_ICON_W = 48
+const LAST_SEEN_ICON_H = 62
+const LAST_SEEN_ANCHOR_X = 24
+/** Anchor at geographic point: horizontal center, vertical center of the 40px portrait (not the badge). */
+const LAST_SEEN_ANCHOR_Y = 20
 
 const numberedIcon = (order: number, variant: JourneyMarkerVariant): L.DivIcon => {
   if (variant === 'last' || variant === 'single') {
     return L.divIcon({
       className: 'map-podo-marker-wrap',
-      html: `<div class="map-podo-marker map-last-seen-marker"><img src="${PODO_IMAGE_URL}" alt="Podo marker" /><span class="map-podo-marker-badge">${order}</span></div>`,
-      iconSize: [40, 40],
-      iconAnchor: [20, 20],
-      popupAnchor: [0, -20],
+      html: `<div class="map-podo-marker-cluster map-podo-marker-cluster--stacked"><div class="map-podo-marker map-last-seen-marker"><img src="${PODO_IMAGE_URL}" alt="Podo marker" /></div><span class="map-podo-marker-badge" aria-label="Stop ${order}">${order}</span></div>`,
+      iconSize: [LAST_SEEN_ICON_W, LAST_SEEN_ICON_H],
+      iconAnchor: [LAST_SEEN_ANCHOR_X, LAST_SEEN_ANCHOR_Y],
+      popupAnchor: [0, -LAST_SEEN_ANCHOR_Y],
     })
   }
 
@@ -48,6 +58,15 @@ const numberedIcon = (order: number, variant: JourneyMarkerVariant): L.DivIcon =
     popupAnchor: [0, -16],
   })
 }
+
+/** Records exist at this coordinate but it is not a numbered journey stop — not Leaflet's default blue pin. */
+const offRouteLocationIcon = (): L.DivIcon =>
+  L.divIcon({
+    className: 'map-off-route-location-wrap',
+    html: '<div class="map-off-route-location-dot" aria-hidden="true"></div>',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+  })
 
 const arrowIcon = (bearingDeg: number): L.DivIcon => {
   const normalized = ((bearingDeg % 360) + 360) % 360
@@ -133,7 +152,7 @@ const InvestigationMap = ({ locations, journeyPoints, showRoute }: Investigation
     <MapContainer
       center={ANKARA_CENTER}
       zoom={13}
-      className="z-0 h-[min(70vh,640px)] w-full rounded-xl border border-slate-200 min-h-[420px] transition-shadow focus-within:ring-2 focus-within:ring-amber-500/30"
+      className="z-0 h-[min(70vh,640px)] w-full rounded-xl border border-stone-300/90 bg-[#e8e4dc] min-h-[420px] shadow-inner shadow-amber-950/10 transition-shadow focus-within:ring-2 focus-within:ring-amber-500/40"
       scrollWheelZoom
     >
       <MapViewController
@@ -142,7 +161,7 @@ const InvestigationMap = ({ locations, journeyPoints, showRoute }: Investigation
         locationPositions={locationPositions}
       />
 
-      <TileLayer attribution={OSM_ATTRIBUTION} url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <TileLayer attribution={CARTO_ATTRIBUTION} url={CARTO_POSITRON_TILES} />
 
       {locationMarkers.map((location) => {
         const parsed = parseCoordinateKey(location.coordinateKey)
@@ -153,7 +172,7 @@ const InvestigationMap = ({ locations, journeyPoints, showRoute }: Investigation
         const count = location.recordIds.length
 
         return (
-          <Marker key={location.coordinateKey} position={parsed}>
+          <Marker key={location.coordinateKey} position={parsed} icon={offRouteLocationIcon()}>
             <Popup>
               <div className="min-w-[10rem] text-slate-900">
                 <p className="text-sm font-semibold">{title}</p>
@@ -174,19 +193,21 @@ const InvestigationMap = ({ locations, journeyPoints, showRoute }: Investigation
         <>
           <Polyline
             pathOptions={{
-              color: '#fdba74',
-              weight: 12,
-              opacity: 0.45,
+              className: 'map-route-glow',
+              color: '#fbbf24',
+              weight: 14,
+              opacity: 0.35,
               lineCap: 'round',
               lineJoin: 'round',
+              dashArray: '1 12',
             }}
             positions={polylinePositions}
           />
           <Polyline
             pathOptions={{
-              color: '#9a3412',
-              weight: 5,
-              opacity: 0.95,
+              color: '#f59e0b',
+              weight: 4,
+              opacity: 0.98,
               lineCap: 'round',
               lineJoin: 'round',
             }}

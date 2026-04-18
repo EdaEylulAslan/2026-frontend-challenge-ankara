@@ -3,20 +3,30 @@ import type { PersonIndexEntry } from '../../data/types'
 
 interface PersonCardProps {
   person: PersonIndexEntry
+  suspicionLevel?: 'high' | 'medium' | 'low' | 'none'
+}
+
+const suspicionRingClass: Record<NonNullable<PersonCardProps['suspicionLevel']>, string> = {
+  high: 'ring-4 ring-rose-500/50 ring-offset-2 ring-offset-[#fffdf8]',
+  medium: 'ring-2 ring-amber-500/55 ring-offset-2 ring-offset-[#fffdf8]',
+  low: 'ring-1 ring-slate-400/60 ring-offset-1 ring-offset-[#fffdf8]',
+  none: '',
 }
 
 const getInitial = (name: string): string => name.charAt(0).toUpperCase()
 
-const PersonCard = ({ person }: PersonCardProps) => {
+const PersonCard = ({ person, suspicionLevel = 'none' }: PersonCardProps) => {
   const aliases = person.variants.filter((variant) => variant !== person.canonicalName)
 
   return (
     <Link
       to={`/people/${encodeURIComponent(person.canonicalName)}`}
-      className="case-card block p-4"
+      className="case-card block p-4 transition-transform hover:-translate-y-0.5"
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
+        <div
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white ${suspicionRingClass[suspicionLevel]}`}
+        >
           {getInitial(person.canonicalName)}
         </div>
         <div className="min-w-0">

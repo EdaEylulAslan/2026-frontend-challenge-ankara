@@ -18,7 +18,7 @@ const AppShell = ({ children }: AppShellProps) => {
         />
         <section className="min-w-0 flex-1 rounded-xl border border-stone-300/70 bg-stone-100/45 p-2 shadow-inner shadow-amber-950/10">
           <Header />
-          {children}
+          <div className="page-enter px-1 pb-2 pt-0 sm:px-2">{children}</div>
         </section>
       </div>
     </main>
