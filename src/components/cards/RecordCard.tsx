@@ -1,5 +1,7 @@
 import { format } from 'date-fns'
 import RecordTypeBadge from '../records/RecordTypeBadge'
+import SubjectBadge from '../records/SubjectBadge'
+import { canonicalizePerson } from '../../data/canonicalize'
 import { parseRecordTimestamp } from '../../data/normalize'
 import type { InvestigationRecord } from '../../data/types'
 
@@ -43,6 +45,7 @@ const RecordCard = ({ record }: RecordCardProps) => {
       : typeof record.fields.senderName === 'string'
         ? record.fields.senderName
         : 'Unknown person'
+  const isSubjectRecord = canonicalizePerson(person) === 'podo'
 
   return (
     <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -50,7 +53,10 @@ const RecordCard = ({ record }: RecordCardProps) => {
         <RecordTypeBadge formType={record.formType} />
         <span className="text-xs text-slate-500">{getDisplayTime(record)}</span>
       </div>
-      <h3 className="mt-3 text-sm font-semibold text-slate-900">{person}</h3>
+      <div className="mt-3 flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-slate-900">{person}</h3>
+        {isSubjectRecord ? <SubjectBadge /> : null}
+      </div>
       <p className="mt-1 text-sm text-slate-700">{getPrimaryText(record)}</p>
       <p className="mt-2 text-xs text-slate-500">{location}</p>
     </article>

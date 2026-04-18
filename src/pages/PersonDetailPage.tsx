@@ -1,8 +1,10 @@
 import { useParams } from 'react-router-dom'
+import SubjectBadge from '../components/records/SubjectBadge'
 import EmptyState from '../components/states/EmptyState'
 import ErrorState from '../components/states/ErrorState'
 import LoadingState from '../components/states/LoadingState'
 import TimelineView from '../components/timeline/TimelineView'
+import { canonicalizePerson } from '../data/canonicalize'
 import { usePersonDetail } from '../hooks/usePersonDetail'
 
 const PersonDetailPage = () => {
@@ -31,6 +33,11 @@ const PersonDetailPage = () => {
               <p className="text-sm font-semibold capitalize text-slate-900">
                 {data.person.canonicalName}
               </p>
+              {canonicalizePerson(data.person.canonicalName) === 'podo' ? (
+                <div className="mt-1">
+                  <SubjectBadge />
+                </div>
+              ) : null}
               <p className="mt-1 text-xs text-slate-600">
                 Also known as: {data.person.variants.join(', ')}
               </p>
